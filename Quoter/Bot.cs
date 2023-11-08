@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 
@@ -96,7 +96,7 @@ Console.WriteLine("Updating");
             Console.WriteLine("I have messages?" + messages2.Any());
 
             
-var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username}).Reverse().LastOrDefault(x => x.username == id.ToString());
+var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds }).Reverse().LastOrDefault(x => x.username == id.ToString());
             Console.WriteLine("I got this far");
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
                Quotes.Add(new QuoteRecord
@@ -104,7 +104,7 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
                    UserName = id.Username,
                    GlobalName = id.GlobalName,
                    Id = d.ToString(),
-                   Text = test.content
+                   Text = test.content.Replace("@", "")
                });
             }catch(Exception e)
             {
