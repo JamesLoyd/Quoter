@@ -82,7 +82,7 @@ Console.WriteLine("Updating");
                 await command.RespondAsync("Can't quote myself");
                 return;
             }
-            if ((id).Username != "jrocflanders")
+            if (command.User.Username != "jrocflanders")
             {
                 await command.RespondAsync("Not yet fam");
                 return;
