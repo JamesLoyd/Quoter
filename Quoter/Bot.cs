@@ -82,6 +82,11 @@ Console.WriteLine("Updating");
                 await command.RespondAsync("Can't quote myself");
                 return;
             }
+            if ((id).Username != "jrocflanders")
+            {
+                await command.RespondAsync("Not yet fam");
+                return;
+            }
             var userId = await command.Channel.GetUsersAsync().Where(x => x.Any(y => y.Username == id.Username.ToString())).ToListAsync();
             try
             {

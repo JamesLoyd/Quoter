@@ -2,6 +2,6 @@
 hcsharpsquid:S1104	"DMake this field 'private' and encapsulate it in a 'public' property.(à£‘ù8²Ôˆ»1
 €csharpsquid:S2386	"\Use an immutable collection or reduce the accessibility of the public static field 'Quotes'.(à£‘ù8ÂÔˆ»1
 gcsharpsquid:S2223	"CChange the visibility of 'Quotes' or make it 'const' or 'readonly'.(à£‘ù8ÒÔˆ»1
-Tcsharpsquid:S2259\"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8éöÃ‰»1
-Rcsharpsquid:S2259e".'test' is null on at least one execution path.(Áé£í8éöÃ‰»1
+Tcsharpsquid:S2259a"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8éöÃ‰»1
+Rcsharpsquid:S2259j".'test' is null on at least one execution path.(Áé£í8éöÃ‰»1
 Gcsharpsquid:S125"Remove this commented out code.(›Ê†üÿÿÿÿ8Âá¡„»1
