@@ -46,6 +46,10 @@ Console.WriteLine("Updating");
         globalCommand2.WithDescription("I help you get quotes");
         globalCommand2.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
+        var globalCommand3 = new SlashCommandBuilder();
+        globalCommand3.WithName("list-quotes");
+        globalCommand3.WithDescription("I help you get quotes");
+        globalCommand3.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
         try
         {
@@ -55,6 +59,7 @@ Console.WriteLine("Updating");
             Console.WriteLine("Adding it now");
             await _client.CreateGlobalApplicationCommandAsync(globalCommand.Build());
             await _client.CreateGlobalApplicationCommandAsync(globalCommand2.Build());
+            await _client.CreateGlobalApplicationCommandAsync(globalCommand3.Build());
 
             // Using the ready event is a simple implementation for the sake of the example. Suitable for testing and development.
             // For a production bot, it is recommended to only run the CreateGlobalApplicationCommandAsync() once for each command.
@@ -104,6 +109,10 @@ Console.WriteLine("Updating");
 var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds }).Reverse().LastOrDefault(x => x.username == id.ToString());
             Console.WriteLine("I got this far");
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
+               if (Quotes.Count() > 4)
+               {
+                   Quotes.RemoveAt(4);
+               }
                Quotes.Add(new QuoteRecord
                {
                    UserName = id.Username,
@@ -124,6 +133,13 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
             var randomNumber = random.Next(0, Quotes.Count);
             var message = Quotes.Where(x => x.UserName == id.Username).ToArray()[randomNumber];
             await command.RespondAsync($"{message.GlobalName}: {message.Text}");
+        }
+        
+        if (command.Data.Name == "list-quotes")
+        {
+            var id = command.Data.Options.ElementAt(0).Value! as IUser;
+            var message = Quotes.Where(x => x.UserName == id.Username);
+            await command.RespondAsync("Message count for user is: " + string.Join(',',message.Select(x => x.Text)));
         }
     }
 }
