@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 
@@ -39,12 +39,12 @@ Console.WriteLine("Updating");
         var globalCommand = new SlashCommandBuilder();
         globalCommand.WithName("quote-that");
         globalCommand.WithDescription("I help you quopte");
-        globalCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote");
+        globalCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote", true);
    
         var globalCommand2 = new SlashCommandBuilder();
         globalCommand2.WithName("rq-that");
         globalCommand2.WithDescription("I help you get quotes");
-        globalCommand2.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote");
+        globalCommand2.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
 
         try
