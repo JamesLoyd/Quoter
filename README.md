@@ -22,3 +22,10 @@
 
 * It would be nice to be able to search for quotes by content. (:
   * Old quote bot would not allow us to do that. ):
+
+## Done
+ 
+ - Initial setup
+ - initial purge
+ - add roles to memory storage
+ - setup add perm command
