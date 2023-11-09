@@ -1,15 +1,7 @@
 
-Lcsharpsquid:S2971’""Use 'Count' property here instead.(¾ñ¿ôúÿÿÿÿ8Ÿ‚Š»1
-hcsharpsquid:S1104
-"DMake this field 'private' and encapsulate it in a 'public' property.(à£‘ù8²Ôˆ»1
-hcsharpsquid:S1104"DMake this field 'private' and encapsulate it in a 'public' property.(ŸßÑĞ8­é¸¦»1
-€csharpsquid:S2386
-"\Use an immutable collection or reduce the accessibility of the public static field 'Quotes'.(à£‘ù8ÂÔˆ»1
-…csharpsquid:S2386"aUse an immutable collection or reduce the accessibility of the public static field 'Permissions'.(ŸßÑĞ8®é¸¦»1
-gcsharpsquid:S2223
-"CChange the visibility of 'Quotes' or make it 'const' or 'readonly'.(à£‘ù8ÒÔˆ»1
-lcsharpsquid:S2223"HChange the visibility of 'Permissions' or make it 'const' or 'readonly'.(ŸßÑĞ8®é¸¦»1
-Ucsharpsquid:S2259ƒ"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8Ì¿†Œ»1
-Xcsharpsquid:S2259Œ".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8Ì¿†Œ»1
-Gcsharpsquid:S125"Remove this commented out code.(›Ê†üÿÿÿÿ8Âá¡„»1
-Gcsharpsquid:S125P"Remove this commented out code.(ûãˆ²şÿÿÿÿ8åæı¦»1
+Ucsharpsquid:S2259"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8¢½ú¬»1
+Xcsharpsquid:S2259Š".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8£½ú¬»1
+Gcsharpsquid:S125"Remove this commented out code.(›Ê†üÿÿÿÿ8Âá¡„»1
+Gcsharpsquid:S125N"Remove this commented out code.(ûãˆ²şÿÿÿÿ8åæı¦»1
+Ccsharpsquid:S125"Remove this commented out code.(ó’¡8ÕÊê¬»1
+Hcsharpsquid:S125·"Remove this commented out code.(ì€Ï¼üÿÿÿÿ8¼¿ñ¬»1

@@ -7,14 +7,12 @@ namespace Quoter;
 
 public class Bot
 {
-    public static List<QuoteRecord> Quotes = new List<QuoteRecord>();
-    public static List<Permission> Permissions = new List<Permission>();
     private DiscordSocketClient _client;
+    private QuoterContext _quoterContext;
     public async Task MainAsync()
     {
-        
         _client = new DiscordSocketClient();
-
+        _quoterContext = new QuoterContext();
 
         //  You can assign your bot token to a string, and pass that in to connect.
         //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
@@ -143,15 +141,17 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
                 return;                
             }
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
-               if (Quotes.Count() > 4)
+               // if (_quoterContext.QuoteRecords.Count() > 4)
+               // {
+               //     _quoterContext.QuoteRecords.Remove();
+               // }
+               _quoterContext.QuoteRecords.Add(new QuoteRecord
                {
-                   Quotes.RemoveAt(4);
-               }
-               Quotes.Add(new QuoteRecord
-               {
+                   Id = Guid.NewGuid(),
                    UserName = id.Username,
                    GlobalName = id.GlobalName,
-                   Id = d.ToString(),
+                   UserId = d.ToString(),
+                   GuildId = command.GuildId.ToString(),
                    Text = test.content.Replace("@", "")
                });
             }catch(Exception e)
@@ -164,30 +164,32 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
         {
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
             var random = new Random();
-            var randomNumber = random.Next(0, Quotes.Count);
-            var message = Quotes.Where(x => x.UserName == id.Username).ToArray()[randomNumber];
+            var randomNumber = random.Next(0, _quoterContext.QuoteRecords.Where(x => x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()).Count());
+            var message = _quoterContext.QuoteRecords.Where(x => x.UserName == id.Username && x.GuildId == command.GuildId.ToString()
+            ).ToArray()[randomNumber];
             await command.RespondAsync($"{message.GlobalName}: {message.Text}");
         }
         
         if (command.Data.Name == "list-quotes")
         {
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
-            var message = Quotes.Where(x => x.UserName == id.Username);
+            var message = _quoterContext.QuoteRecords.Where(x => x.UserName == id.Username);
             await command.RespondAsync("Message count for user is: " + string.Join(',',message.Select(x => x.Text)));
         }
         
         if(command.Data.Name == "purge-quotes")
         {
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
-            Quotes.RemoveAll(x => x.UserName == id.Username);
+            // _quoterContext.QuoteRecords.RemoveAll(x => x.UserName == id.Username);
             await command.RespondAsync("Purged quotes for user " + id.Username);
         }
 
         if (command.Data.Name == "add-perm")
         {
             var id = command.Data.Options.ElementAt(0).Value! as IRole;
-           Permissions.Add(new Permission
+           _quoterContext.Permissions.Add(new Permission
            {
+               Id = Guid.NewGuid(),
                RoleId = id.Id.ToString(),
                RoleName = id.Name,
            });
