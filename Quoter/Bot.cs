@@ -8,6 +8,7 @@ namespace Quoter;
 public class Bot
 {
     public static List<QuoteRecord> Quotes = new List<QuoteRecord>();
+    public static List<Permission> Permissions = new List<Permission>();
     private DiscordSocketClient _client;
     public async Task MainAsync()
     {
@@ -57,16 +58,36 @@ Console.WriteLine("Updating");
         purgeQuoteCommand.WithDescription("I help you get quotes");
         purgeQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
+        var addPerm = new SlashCommandBuilder();
+        addPerm.WithName("add-perm");
+        addPerm.WithDescription("I help you get quotes");
+        addPerm.AddOption("quoted", ApplicationCommandOptionType.Role, "User to re-quote", true);
+
+        List<ApplicationCommandProperties> applicationCommandProperties = new();
+
+
         try
         {
             // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
-
             // With global commands we don't need the guild.
             Console.WriteLine("Adding it now");
-            await _client.CreateGlobalApplicationCommandAsync(quoteThatCommand.Build());
-            await _client.CreateGlobalApplicationCommandAsync(requestQuoteCommand.Build());
-            await _client.CreateGlobalApplicationCommandAsync(listQuotesCommand.Build());
-            await _client.CreateGlobalApplicationCommandAsync(purgeQuoteCommand.Build());
+            applicationCommandProperties.Add(quoteThatCommand.Build());
+            applicationCommandProperties.Add(requestQuoteCommand.Build());
+            applicationCommandProperties.Add(listQuotesCommand.Build());
+            applicationCommandProperties.Add(purgeQuoteCommand.Build());
+            applicationCommandProperties.Add(addPerm.Build());
+            
+            //await _client.CreateGlobalApplicationCommandAsync(quoteThatCommand.Build());
+            //await _client.CreateGlobalApplicationCommandAsync(requestQuoteCommand.Build());
+            //await _client.CreateGlobalApplicationCommandAsync(listQuotesCommand.Build());
+            //await _client.CreateGlobalApplicationCommandAsync(purgeQuoteCommand.Build());
+            //await _client.CreateGlobalApplicationCommandAsync(addPerm.Build());
+
+            await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(), new RequestOptions
+            {
+                AuditLogReason = "Rebuild commands"
+            });
+
             // Using the ready event is a simple implementation for the sake of the example. Suitable for testing and development.
             // For a production bot, it is recommended to only run the CreateGlobalApplicationCommandAsync() once for each command.
         }
@@ -160,6 +181,17 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
             Quotes.RemoveAll(x => x.UserName == id.Username);
             await command.RespondAsync("Purged quotes for user " + id.Username);
+        }
+
+        if (command.Data.Name == "add-perm")
+        {
+            var id = command.Data.Options.ElementAt(0).Value! as IRole;
+           Permissions.Add(new Permission
+           {
+               RoleId = id.Id.ToString(),
+               RoleName = id.Name,
+           });
+            await command.RespondAsync("Add role " + id.Name);
         }
     }
 }
