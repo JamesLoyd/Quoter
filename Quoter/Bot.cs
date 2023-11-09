@@ -108,6 +108,11 @@ Console.WriteLine("Updating");
             
 var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds }).Reverse().LastOrDefault(x => x.username == id.ToString());
             Console.WriteLine("I got this far");
+            if (test.content == "no quote")
+            {
+                await command.RespondAsync($"Can't quote <@{d}>");
+                return;                
+            }
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
                if (Quotes.Count() > 4)
                {
