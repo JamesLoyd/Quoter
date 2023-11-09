@@ -103,7 +103,7 @@ Console.WriteLine("Updating");
     {
         if (command.User.Username != "jrocflanders")
         {
-            await command.RespondAsync("Not yet fam");
+            await command.RespondAsync("Not yet fam", ephemeral :true);
             return;
         }
         
@@ -115,7 +115,7 @@ Console.WriteLine("Updating");
             Console.WriteLine("id is " + id);
             if ((id).Username == "quoter")
             {
-                await command.RespondAsync("Can't quote myself");
+                await command.RespondAsync("Can't quote myself", ephemeral :true);
                 return;
             }
 
@@ -134,6 +134,7 @@ Console.WriteLine("Updating");
 
             
 var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds }).Reverse().LastOrDefault(x => x.username == id.ToString());
+Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
             Console.WriteLine("I got this far");
             if (test.content == "no quote")
             {
@@ -141,20 +142,28 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
                 return;                
             }
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
-               // if (_quoterContext.QuoteRecords.Count() > 4)
-               // {
-               //     _quoterContext.QuoteRecords.Remove();
-               // }
+               var ty = test.mentioned.FirstOrDefault();
+               var userReplace = await command.Channel.GetUserAsync(ty);
+               Console.WriteLine("got user to replace" + userReplace?.Username ?? "");
+               var stringCR = test.content.Replace("<@" + ty + ">",  userReplace?.GlobalName ?? "");
+               Console.WriteLine("stringCR" + stringCR);
+               if (_quoterContext.QuoteRecords.Count() > 4)
+               {
+                   _quoterContext.QuoteRecords.Remove(_quoterContext.QuoteRecords.Last());
+                   _quoterContext.SaveChanges();
+               }
+               var guild = _client.GetGuild(command.GuildId.Value);
+               var gus = guild.Users.FirstOrDefault(x => x.Id == id.Id);
                _quoterContext.QuoteRecords.Add(new QuoteRecord
                {
                    Id = Guid.NewGuid(),
                    UserName = id.Username,
-                   GlobalName = id.GlobalName,
+                   GlobalName = gus.Nickname ?? id.GlobalName,
                    UserId = d.ToString(),
                    ChannelId = command.Channel.Id.ToString(),
                    ChannelName = command.Channel.Name,
                    GuildId = command.GuildId.ToString(),
-                   Text = test.content.Replace("@", "")
+                   Text = stringCR
                });
                _quoterContext.SaveChanges();
             }catch(Exception e)
@@ -185,7 +194,7 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
             catch(Exception ex)
             {
                 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
-                await command.RespondAsync("Somehting is wrong");
+                await command.RespondAsync("There was an error", ephemeral :true);
             }
         }
         
@@ -193,13 +202,14 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
         {
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
             var message = _quoterContext.QuoteRecords.Where(x => x.UserName == id.Username);
-            await command.RespondAsync("Message count for user is: " + string.Join(',',message.Select(x => x.Text)));
+            await command.RespondAsync("Message count for user is: " + string.Join(',',message.Select(x => x.Text)), ephemeral: true);
         }
         
         if(command.Data.Name == "purge-quotes")
         {
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
-            // _quoterContext.QuoteRecords.RemoveAll(x => x.UserName == id.Username);
+             _quoterContext.QuoteRecords.RemoveRange(_quoterContext.QuoteRecords.Where( x => x.UserName == id.Username && x.GuildId == command.GuildId.ToString()));
+             _quoterContext.SaveChanges();
             await command.RespondAsync("Purged quotes for user " + id.Username);
         }
 
@@ -212,6 +222,7 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
                RoleId = id.Id.ToString(),
                RoleName = id.Name,
            });
+           _quoterContext.SaveChanges();
             await command.RespondAsync("Add role " + id.Name);
         }
     }

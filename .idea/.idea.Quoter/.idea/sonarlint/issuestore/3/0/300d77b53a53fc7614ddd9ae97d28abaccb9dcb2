@@ -1,8 +1,6 @@
 
-{csharpsquid:S3776f"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(œŠøÚûÿÿÿÿ8ƒ‚‰­»1
-Ucsharpsquid:S2259"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8¤¶—­»1
-Xcsharpsquid:S2259Š".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8¤¶—­»1
+{csharpsquid:S3776f"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(œŠøÚûÿÿÿÿ8ƒ‚‰­»1
+Ucsharpsquid:S2259"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8¤Áƒ²»1
+Xcsharpsquid:S2259‹".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8¤Áƒ²»1
 Gcsharpsquid:S125"Remove this commented out code.(›Ê†üÿÿÿÿ8Âá¡„»1
 Gcsharpsquid:S125N"Remove this commented out code.(ûãˆ²şÿÿÿÿ8åæı¦»1
-Ccsharpsquid:S125"Remove this commented out code.(ó’¡8ÕÊê¬»1
-Hcsharpsquid:S125Ê"Remove this commented out code.(ì€Ï¼üÿÿÿÿ8¼¿ñ¬»1
