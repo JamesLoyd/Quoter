@@ -8,8 +8,8 @@
 ## Technical TODO
 - Wire up database and migrations :)
 - find a good # of quotes to store, pop off the last ones
-- restrict quotes to channels ?
-- restrict quotes to guild
+- restrict quotes to channels -- critical
+- restrict quotes to guild -- critical
 - handle images
 
 
