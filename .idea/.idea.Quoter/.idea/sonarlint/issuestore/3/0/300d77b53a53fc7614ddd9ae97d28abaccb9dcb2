@@ -1,11 +1,11 @@
 
-Kcsharpsquid:S2971|""Use 'Count' property here instead.(¾ñ¿ôúÿÿÿÿ8Ÿ‚Š»1
+Kcsharpsquid:S2971}""Use 'Count' property here instead.(¾ñ¿ôúÿÿÿÿ8Ÿ‚Š»1
 hcsharpsquid:S1104
 "DMake this field 'private' and encapsulate it in a 'public' property.(à£‘ù8²Ôˆ»1
 €csharpsquid:S2386
 "\Use an immutable collection or reduce the accessibility of the public static field 'Quotes'.(à£‘ù8ÂÔˆ»1
 gcsharpsquid:S2223
 "CChange the visibility of 'Quotes' or make it 'const' or 'readonly'.(à£‘ù8ÒÔˆ»1
-Tcsharpsquid:S2259m"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8Ì¿†Œ»1
-Wcsharpsquid:S2259v".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8Ì¿†Œ»1
+Tcsharpsquid:S2259n"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8Ì¿†Œ»1
+Wcsharpsquid:S2259w".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8Ì¿†Œ»1
 Gcsharpsquid:S125"Remove this commented out code.(›Ê†üÿÿÿÿ8Âá¡„»1

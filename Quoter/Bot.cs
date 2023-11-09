@@ -37,25 +37,25 @@ Console.WriteLine("Updating");
     {
         Console.WriteLine("client ready");
         // Let's do our global command
-        var globalCommand = new SlashCommandBuilder();
-        globalCommand.WithName("quote-that");
-        globalCommand.WithDescription("I help you quopte");
-        globalCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote", true);
+        var quoteThatCommand = new SlashCommandBuilder();
+        quoteThatCommand.WithName("quote-that");
+        quoteThatCommand.WithDescription("I help you quopte");
+        quoteThatCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote", true);
    
-        var globalCommand2 = new SlashCommandBuilder();
-        globalCommand2.WithName("rq-that");
-        globalCommand2.WithDescription("I help you get quotes");
-        globalCommand2.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        var requestQuoteCommand = new SlashCommandBuilder();
+        requestQuoteCommand.WithName("rq-that");
+        requestQuoteCommand.WithDescription("I help you get quotes");
+        requestQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
-        var globalCommand3 = new SlashCommandBuilder();
-        globalCommand3.WithName("list-quotes");
-        globalCommand3.WithDescription("I help you get quotes");
-        globalCommand3.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        var listQuotesCommand = new SlashCommandBuilder();
+        listQuotesCommand.WithName("list-quotes");
+        listQuotesCommand.WithDescription("I help you get quotes");
+        listQuotesCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
         
-        var globalCommand4 = new SlashCommandBuilder();
-        globalCommand4.WithName("purge-quotes");
-        globalCommand4.WithDescription("I help you get quotes");
-        globalCommand4.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        var purgeQuoteCommand = new SlashCommandBuilder();
+        purgeQuoteCommand.WithName("purge-quotes");
+        purgeQuoteCommand.WithDescription("I help you get quotes");
+        purgeQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
         try
         {
@@ -63,11 +63,10 @@ Console.WriteLine("Updating");
 
             // With global commands we don't need the guild.
             Console.WriteLine("Adding it now");
-            await _client.CreateGlobalApplicationCommandAsync(globalCommand.Build());
-            await _client.CreateGlobalApplicationCommandAsync(globalCommand2.Build());
-            await _client.CreateGlobalApplicationCommandAsync(globalCommand3.Build());
-
-            await _client.CreateGlobalApplicationCommandAsync(globalCommand4.Build());
+            await _client.CreateGlobalApplicationCommandAsync(quoteThatCommand.Build());
+            await _client.CreateGlobalApplicationCommandAsync(requestQuoteCommand.Build());
+            await _client.CreateGlobalApplicationCommandAsync(listQuotesCommand.Build());
+            await _client.CreateGlobalApplicationCommandAsync(purgeQuoteCommand.Build());
             // Using the ready event is a simple implementation for the sake of the example. Suitable for testing and development.
             // For a production bot, it is recommended to only run the CreateGlobalApplicationCommandAsync() once for each command.
         }
@@ -83,6 +82,12 @@ Console.WriteLine("Updating");
     
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
+        if (command.User.Username != "jrocflanders")
+        {
+            await command.RespondAsync("Not yet fam");
+            return;
+        }
+        
         if (command.Data.Name == "quote-that")
         {
             
@@ -94,11 +99,7 @@ Console.WriteLine("Updating");
                 await command.RespondAsync("Can't quote myself");
                 return;
             }
-            if (command.User.Username != "jrocflanders")
-            {
-                await command.RespondAsync("Not yet fam");
-                return;
-            }
+
             var userId = await command.Channel.GetUsersAsync().Where(x => x.Any(y => y.Username == id.Username.ToString())).ToListAsync();
             try
             {

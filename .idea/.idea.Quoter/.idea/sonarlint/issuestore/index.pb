@@ -3,10 +3,6 @@ A
 Quoter/Program.cs,4\2\42fce6da739f463f6d44b0fd65283432ef1d94fe
 =
 Quoter/Bot.cs,3\0\300d77b53a53fc7614ddd9ae97d28abaccb9dcb2
-E
-Quoter/QuoteRecord.cs,0\8\08b38124893eb758d0aa0ace867371b08cbe4711
-F
-Quoter/KriegContext.cs,b\1\b11317a8a859a976f6db06001820418758d8d037
 ^
 .Quoter/obj/Debug/net6.0/Quoter.AssemblyInfo.cs,e\0\e09351228daad2d2eabf468df2dc238db304df2a
 D
