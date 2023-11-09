@@ -13,3 +13,9 @@ D
 Quoter/Quoter.csproj,4\a\4aab702a9858b5df39511fc03a8bd53dbfb8ff12
 9
 	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
+G
+Quoter/QuoterContext.cs,7\6\7627bc7967aa7931ace2f34e4dda4ed102d01a78
+N
+Quoter/Entities/QuoteRecord.cs,b\7\b794b98fa3a2f4f08965fe7ff642c137eb4e3365
+M
+Quoter/Entities/Permission.cs,9\2\92b28cfafacab2da494ab656f7f4dfec660eb4ef

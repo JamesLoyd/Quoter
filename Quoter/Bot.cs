@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
+using Quoter.Entities;
 
 namespace Quoter;
 
