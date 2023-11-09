@@ -151,9 +151,12 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
                    UserName = id.Username,
                    GlobalName = id.GlobalName,
                    UserId = d.ToString(),
+                   ChannelId = command.Channel.Id.ToString(),
+                   ChannelName = command.Channel.Name,
                    GuildId = command.GuildId.ToString(),
                    Text = test.content.Replace("@", "")
                });
+               _quoterContext.SaveChanges();
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -163,11 +166,27 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
         if (command.Data.Name == "rq-that")
         {
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
-            var random = new Random();
-            var randomNumber = random.Next(0, _quoterContext.QuoteRecords.Where(x => x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()).Count());
-            var message = _quoterContext.QuoteRecords.Where(x => x.UserName == id.Username && x.GuildId == command.GuildId.ToString()
-            ).ToArray()[randomNumber];
-            await command.RespondAsync($"{message.GlobalName}: {message.Text}");
+            Console.WriteLine("User is " + id.Username);
+            try
+            {
+
+                var random = new Random();
+                var randomNumber = random.Next(0,
+                    _quoterContext.QuoteRecords.Count(x =>
+                        x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()));
+                Console.WriteLine("randomnnumber is" + randomNumber);
+                var messagea = _quoterContext.QuoteRecords.Where(
+                    x => x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()
+                );
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(messagea));
+                var message =messagea.ToArray()[randomNumber];
+                await command.RespondAsync($"{message.GlobalName}: {message.Text}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
+                await command.RespondAsync("Somehting is wrong");
+            }
         }
         
         if (command.Data.Name == "list-quotes")
