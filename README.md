@@ -10,6 +10,7 @@
 - find a good # of quotes to store, pop off the last ones
 - restrict quotes to channels ?
 - restrict quotes to guild
+- handle images
 
 
 User requests
