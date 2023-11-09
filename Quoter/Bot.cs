@@ -50,6 +50,11 @@ Console.WriteLine("Updating");
         globalCommand3.WithName("list-quotes");
         globalCommand3.WithDescription("I help you get quotes");
         globalCommand3.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        
+        var globalCommand4 = new SlashCommandBuilder();
+        globalCommand4.WithName("purge-quotes");
+        globalCommand4.WithDescription("I help you get quotes");
+        globalCommand4.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
         try
         {
@@ -61,6 +66,7 @@ Console.WriteLine("Updating");
             await _client.CreateGlobalApplicationCommandAsync(globalCommand2.Build());
             await _client.CreateGlobalApplicationCommandAsync(globalCommand3.Build());
 
+            await _client.CreateGlobalApplicationCommandAsync(globalCommand4.Build());
             // Using the ready event is a simple implementation for the sake of the example. Suitable for testing and development.
             // For a production bot, it is recommended to only run the CreateGlobalApplicationCommandAsync() once for each command.
         }
@@ -145,6 +151,13 @@ var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, use
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
             var message = Quotes.Where(x => x.UserName == id.Username);
             await command.RespondAsync("Message count for user is: " + string.Join(',',message.Select(x => x.Text)));
+        }
+        
+        if(command.Data.Name == "purge-quotes")
+        {
+            var id = command.Data.Options.ElementAt(0).Value! as IUser;
+            Quotes.RemoveAll(x => x.UserName == id.Username);
+            await command.RespondAsync("Purged quotes for user " + id.Username);
         }
     }
 }
