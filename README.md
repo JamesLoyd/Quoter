@@ -6,7 +6,7 @@
 - ~~add a "no quote" text phrase that will block the quoter from sniping a quote~~
 
 ## Technical TODO
-- Wire up database and migrations :)
+~~- Wire up database and migrations :)~~
 - find a good # of quotes to store, pop off the last ones
 - restrict quotes to channels -- critical
 - restrict quotes to guild -- critical

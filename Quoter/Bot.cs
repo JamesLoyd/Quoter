@@ -142,11 +142,27 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 return;                
             }
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
-               var ty = test.mentioned.FirstOrDefault();
-               var userReplace = await command.Channel.GetUserAsync(ty);
-               Console.WriteLine("got user to replace" + userReplace?.Username ?? "");
-               var stringCR = test.content.Replace("<@" + ty + ">",  userReplace?.GlobalName ?? "");
-               Console.WriteLine("stringCR" + stringCR);
+               var ty = test.mentioned.Select(x => x);
+               Console.WriteLine("ty is " + JsonConvert.SerializeObject(ty));
+               string content = test.content;
+               var guild2 = _client.GetGuild(command.GuildId.Value);
+
+               foreach (var @ulong in ty)
+               {
+                   var gus2 = guild2.Users.FirstOrDefault(x => x.Id == @ulong);
+                   if (gus2 != null)
+                   {
+                       content = content.Replace("<@" + @ulong + ">",  gus2?.Nickname ?? gus2?.GlobalName ?? gus2?.Username ?? "someone" );
+                   }
+                   else
+                   {
+                       Console.WriteLine("ulong is " + @ulong);
+                       var userReplace = await command.Channel.GetUserAsync(@ulong, CacheMode.AllowDownload, RequestOptions.Default);
+                       Console.WriteLine(userReplace?.Username ?? "what");
+                        content = content.Replace("<@" + @ulong + ">", userReplace?.GlobalName ?? "someone");
+                   }
+               }
+
                if (_quoterContext.QuoteRecords.Count() > 4)
                {
                    _quoterContext.QuoteRecords.Remove(_quoterContext.QuoteRecords.Last());
@@ -158,12 +174,12 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                {
                    Id = Guid.NewGuid(),
                    UserName = id.Username,
-                   GlobalName = gus.Nickname ?? id.GlobalName,
+                   GlobalName = gus?.Nickname ?? id.GlobalName,
                    UserId = d.ToString(),
                    ChannelId = command.Channel.Id.ToString(),
                    ChannelName = command.Channel.Name,
                    GuildId = command.GuildId.ToString(),
-                   Text = stringCR
+                   Text = content
                });
                _quoterContext.SaveChanges();
             }catch(Exception e)
