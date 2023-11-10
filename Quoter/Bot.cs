@@ -129,7 +129,7 @@ public class Bot : IBot
             Console.WriteLine("I have messages?" + messages2.Any());
 
             
-var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds }).Reverse().LastOrDefault(x => x.username == id.ToString());
+var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds, attchments = x.Attachments }).Reverse().LastOrDefault(x => x.username == id.ToString());
 Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
             Console.WriteLine("I got this far");
             if (test.content == "no quote")
@@ -143,6 +143,20 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 await command.RespondAsync("I can't quote messages with mentions", ephemeral: true);
                 return;
             }
+
+            if(test.attchments.Any())
+            {
+                await command.RespondAsync("I can't quote  messages with attachments", ephemeral: true);
+                return;
+            }
+            
+            if(string.IsNullOrWhiteSpace(test.content) || string.IsNullOrEmpty(test.content))
+            {
+                await command.RespondAsync("I can't quote empty messages", ephemeral: true);
+                return;
+            }
+            
+            Console.WriteLine("content is" + test.content);
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
 
                if (_quoterContext.QuoteRecords.Count() > 4)
