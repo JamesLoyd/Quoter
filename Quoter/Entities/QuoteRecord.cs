@@ -4,7 +4,7 @@ namespace Quoter.Entities;
 
 public class QuoteRecord
 {
-    public Guid Id { get; set; }
+    public long Id { get; set; }
     public string GlobalName { get; set; } = "";
     public string UserName { get; set; } = "";
     public string UserId { get; set; } = "";

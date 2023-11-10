@@ -160,14 +160,13 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
 
                if (_quoterContext.QuoteRecords.Count() > 4)
                {
-                   _quoterContext.QuoteRecords.Remove(_quoterContext.QuoteRecords.Last());
+                   _quoterContext.QuoteRecords.Remove(_quoterContext.QuoteRecords.OrderBy(x => x.Id).Last());
                    _quoterContext.SaveChanges();
                }
                var guild = _client.GetGuild(command.GuildId.Value);
                var gus = guild.Users.FirstOrDefault(x => x.Id == id.Id);
                _quoterContext.QuoteRecords.Add(new QuoteRecord
                {
-                   Id = Guid.NewGuid(),
                    UserName = id.Username,
                    GlobalName = gus?.Nickname ?? id.GlobalName,
                    UserId = d.ToString(),

@@ -11,7 +11,7 @@ using Quoter;
 namespace Quoter.Migrations
 {
     [DbContext(typeof(QuoterContext))]
-    [Migration("20231109193916_InitialCreate")]
+    [Migration("20231110225815_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -47,9 +47,9 @@ namespace Quoter.Migrations
 
             modelBuilder.Entity("Quoter.Entities.QuoteRecord", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ChannelId")
                         .IsRequired()

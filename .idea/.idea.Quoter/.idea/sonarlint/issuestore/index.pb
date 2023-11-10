@@ -17,3 +17,7 @@ M
 Quoter/Entities/Permission.cs,9\2\92b28cfafacab2da494ab656f7f4dfec660eb4ef
 G
 Quoter/QuoterService.cs,8\6\86b00bf6fe15a3de6482a19d81418ca1da473f57
+a
+1Quoter/Migrations/20231110225815_InitialCreate.cs,b\8\b8912e95dd4d0a8c9c136cc00d03b39ab751a128
+_
+/Quoter/Migrations/QuoterContextModelSnapshot.cs,c\b\cba7755f966e4103bef3fa6b17b0e72e446cbfa0

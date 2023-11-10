@@ -44,9 +44,9 @@ namespace Quoter.Migrations
 
             modelBuilder.Entity("Quoter.Entities.QuoteRecord", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ChannelId")
                         .IsRequired()
