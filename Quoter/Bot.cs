@@ -159,8 +159,8 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 await command.RespondAsync("I can't quote empty messages", ephemeral: true);
                 return;
             }
-            
-            
+
+            await command.DeferAsync();
             
             Console.WriteLine("content is" + test.content);
 
@@ -182,7 +182,7 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                    Text = test.content
                });
                _quoterContext.SaveChanges();
-               await command.RespondAsync($"I quoted <@{d}> with {test.content}");
+               await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}");
 
             }catch(Exception e)
             {
