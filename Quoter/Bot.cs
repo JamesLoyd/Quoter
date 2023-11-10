@@ -160,10 +160,7 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 return;
             }
 
-            if (test.content.Contains("https://"))
-            {
-                await command.DeferAsync();
-            }
+            await command.DeferAsync();
             
             Console.WriteLine("content is" + test.content);
 
@@ -185,12 +182,8 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                    Text = test.content
                });
                _quoterContext.SaveChanges();
-               if (test.content.Contains("https://"))
-               {
-                   await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}");
-               }
+               await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}");
 
-               await command.RespondAsync($"I quoted <@{d}> with {test.content}");
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);
