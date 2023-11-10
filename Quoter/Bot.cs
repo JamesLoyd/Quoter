@@ -141,27 +141,32 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 await command.RespondAsync($"Can't quote <@{d}>");
                 return;                
             }
-               await command.RespondAsync($"I quoted <@{d}> with {test.content}");
-               var ty = test.mentioned.Select(x => x);
-               Console.WriteLine("ty is " + JsonConvert.SerializeObject(ty));
-               string content = test.content;
-               var guild2 = _client.GetGuild(command.GuildId.Value);
 
-               foreach (var @ulong in ty)
-               {
-                   var gus2 = guild2.Users.FirstOrDefault(x => x.Id == @ulong);
-                   if (gus2 != null)
-                   {
-                       content = content.Replace("<@" + @ulong + ">",  gus2?.Nickname ?? gus2?.GlobalName ?? gus2?.Username ?? "someone" );
-                   }
-                   else
-                   {
-                       Console.WriteLine("ulong is " + @ulong);
-                       var userReplace = await command.Channel.GetUserAsync(@ulong, CacheMode.AllowDownload, RequestOptions.Default);
-                       Console.WriteLine(userReplace?.Username ?? "what");
-                        content = content.Replace("<@" + @ulong + ">", userReplace?.GlobalName ?? "someone");
-                   }
-               }
+            if (test.mentioned.Any())
+            {
+                await command.RespondAsync("I can't quote messages with mentions", ephemeral: true);
+            }
+               await command.RespondAsync($"I quoted <@{d}> with {test.content}");
+               // var ty = test.mentioned.Select(x => x);
+               // Console.WriteLine("ty is " + JsonConvert.SerializeObject(ty));
+               // string content = test.content;
+               // var guild2 = _client.GetGuild(command.GuildId.Value);
+               //
+               // foreach (var @ulong in ty)
+               // {
+               //     var gus2 = guild2.Users.FirstOrDefault(x => x.Id == @ulong);
+               //     if (gus2 != null)
+               //     {
+               //         content = content.Replace("<@" + @ulong + ">",  gus2?.Nickname ?? gus2?.GlobalName ?? gus2?.Username ?? "someone" );
+               //     }
+               //     else
+               //     {
+               //         Console.WriteLine("ulong is " + @ulong);
+               //         var userReplace = await command.Channel.GetUserAsync(@ulong, CacheMode.AllowDownload, RequestOptions.Default);
+               //         Console.WriteLine(userReplace?.Username ?? "what");
+               //          content = content.Replace("<@" + @ulong + ">", userReplace?.GlobalName ?? "someone");
+               //     }
+               // }
 
                if (_quoterContext.QuoteRecords.Count() > 4)
                {
@@ -179,7 +184,7 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                    ChannelId = command.Channel.Id.ToString(),
                    ChannelName = command.Channel.Name,
                    GuildId = command.GuildId.ToString(),
-                   Text = content
+                   Text = test.content
                });
                _quoterContext.SaveChanges();
             }catch(Exception e)
