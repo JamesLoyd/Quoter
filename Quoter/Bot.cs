@@ -20,7 +20,11 @@ public class Bot : IBot
     }
     public async Task MainAsync()
     {
-        _client = new DiscordSocketClient();
+        DiscordSocketConfig config = new()
+        {
+            UseInteractionSnowflakeDate = false
+        };
+        _client = new DiscordSocketClient(config);
 
         //  You can assign your bot token to a string, and pass that in to connect.
         //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
