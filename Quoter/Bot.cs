@@ -31,7 +31,6 @@ public class Bot : IBot
         _client.Ready += Client_Ready;
         _client.SlashCommandExecuted += SlashCommandHandler;
         // Block this task until the program is closed.
-        await Task.Delay(-1);
     }
     
     // Let's build a guild command! We're going to need a guild so lets just put that in a variable.
