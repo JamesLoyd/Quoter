@@ -145,6 +145,7 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
             if (test.mentioned.Any())
             {
                 await command.RespondAsync("I can't quote messages with mentions", ephemeral: true);
+                return;
             }
                await command.RespondAsync($"I quoted <@{d}> with {test.content}");
                // var ty = test.mentioned.Select(x => x);
