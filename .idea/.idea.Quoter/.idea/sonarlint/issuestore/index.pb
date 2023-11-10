@@ -15,3 +15,5 @@ N
 Quoter/Entities/QuoteRecord.cs,b\7\b794b98fa3a2f4f08965fe7ff642c137eb4e3365
 M
 Quoter/Entities/Permission.cs,9\2\92b28cfafacab2da494ab656f7f4dfec660eb4ef
+G
+Quoter/QuoterService.cs,8\6\86b00bf6fe15a3de6482a19d81418ca1da473f57

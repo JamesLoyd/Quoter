@@ -1,13 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Quoter;
 
-namespace Quoter;
+CreateHostBuilder().Build().Run();
+return;
 
-public class Program
+IHostBuilder CreateHostBuilder()
 {
-    public static async Task Main()
-    {
-        var context = new QuoterContext();
-        await context.Database.MigrateAsync();
-        await new Bot().MainAsync();
-    }
+    return Host.CreateDefaultBuilder(args)
+        .ConfigureServices((_, services) =>
+        {
+            services.AddSingleton<IBot, Bot>();
+            services.AddHostedService<QuoterService>();
+            services.AddDbContext<QuoterContext>();
+        });
 }

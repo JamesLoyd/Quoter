@@ -5,24 +5,27 @@ using Quoter.Entities;
 
 namespace Quoter;
 
-public class Bot
+public interface IBot
+{
+    Task MainAsync();
+}
+public class Bot : IBot
 {
     private DiscordSocketClient _client;
     private QuoterContext _quoterContext;
+
+    public Bot(QuoterContext quoterContext)
+    {
+        _quoterContext = quoterContext;
+    }
     public async Task MainAsync()
     {
         _client = new DiscordSocketClient();
-        _quoterContext = new QuoterContext();
 
         //  You can assign your bot token to a string, and pass that in to connect.
         //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
         var token = "MTE3MTg5ODc4MjM1OTc2MDkyNg.GFZsex.370INlou9pvr-qHs1xZdtU27J_Tp0xVRgCtS0w";
-
-        // Some alternative options would be to keep your token in an Environment Variable or a standalone file.
-        // var token = Environment.GetEnvironmentVariable("NameOfYourEnvironmentVariable");
-        // var token = File.ReadAllText("token.txt");
-        // var token = JsonConvert.DeserializeObject<AConfigurationClass>(File.ReadAllText("config.json")).Token;
-Console.WriteLine("Updating");
+        
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
         _client.Ready += Client_Ready;
@@ -68,18 +71,11 @@ Console.WriteLine("Updating");
         {
             // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
             // With global commands we don't need the guild.
-            Console.WriteLine("Adding it now");
             applicationCommandProperties.Add(quoteThatCommand.Build());
             applicationCommandProperties.Add(requestQuoteCommand.Build());
             applicationCommandProperties.Add(listQuotesCommand.Build());
             applicationCommandProperties.Add(purgeQuoteCommand.Build());
             applicationCommandProperties.Add(addPerm.Build());
-            
-            //await _client.CreateGlobalApplicationCommandAsync(quoteThatCommand.Build());
-            //await _client.CreateGlobalApplicationCommandAsync(requestQuoteCommand.Build());
-            //await _client.CreateGlobalApplicationCommandAsync(listQuotesCommand.Build());
-            //await _client.CreateGlobalApplicationCommandAsync(purgeQuoteCommand.Build());
-            //await _client.CreateGlobalApplicationCommandAsync(addPerm.Build());
 
             await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(), new RequestOptions
             {
@@ -177,7 +173,6 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
         if (command.Data.Name == "rq-that")
         {
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
-            Console.WriteLine("User is " + id.Username);
             try
             {
 
@@ -185,7 +180,6 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 var randomNumber = random.Next(0,
                     _quoterContext.QuoteRecords.Count(x =>
                         x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()));
-                Console.WriteLine("randomnnumber is" + randomNumber);
                 var messagea = _quoterContext.QuoteRecords.Where(
                     x => x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()
                 );
