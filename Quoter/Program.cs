@@ -7,7 +7,7 @@ public class Program
     public static async Task Main()
     {
         var context = new QuoterContext();
-        context.Database.Migrate();
+        await context.Database.MigrateAsync();
         await new Bot().MainAsync();
     }
 }
