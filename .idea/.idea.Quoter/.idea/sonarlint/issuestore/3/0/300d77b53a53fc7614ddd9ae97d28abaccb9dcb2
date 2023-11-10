@@ -1,5 +1,7 @@
 
 {csharpsquid:S3776h"RRefactor this method to reduce its Cognitive Complexity from 26 to the 15 allowed.(œŠøÚûÿÿÿÿ8î²Šİ»1
 Ecsharpsquid:S2933"!Make '_quoterContext' 'readonly'.(²Ë›ı8î²Šİ»1
-Ucsharpsquid:S2259ƒ"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8èŠİ»1
-Xcsharpsquid:S2259“".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8èŠİ»1
+Ucsharpsquid:S2259ƒ"+'j' is null on at least one execution path.(ø¿˜½ıÿÿÿÿ8›Ç—İ»1
+Xcsharpsquid:S2259“".'test' is null on at least one execution path.(¦†Ìùÿÿÿÿ8›Ç—İ»1
+Ccsharpsquid:S125«"Remove this commented out code.(È¿öù8Ò˜İ»1
+Hcsharpsquid:S125Ã"Remove this commented out code.(²§Ëãøÿÿÿÿ8Öù–İ»1

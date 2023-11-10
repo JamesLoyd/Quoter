@@ -168,7 +168,7 @@ public class Bot : IBot
                     return;
                 }
 
-                await command.DeferAsync();
+                // await command.DeferAsync();
 
                 Console.WriteLine("content is" + test.content);
 
@@ -191,7 +191,8 @@ public class Bot : IBot
                     Text = test.content
                 });
                 await _quoterContext.SaveChangesAsync();
-                await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}");
+                await command.RespondAsync("test");
+                // await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}");
             }
             catch (Exception e)
             {
