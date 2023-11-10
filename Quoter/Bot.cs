@@ -131,6 +131,7 @@ public class Bot : IBot
 var test =messages2.SelectMany(x => x).Select(x => new {content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds, attchments = x.Attachments }).Reverse().LastOrDefault(x => x.username == id.ToString());
 Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
             Console.WriteLine("I got this far");
+
             if (test.content == "no quote")
             {
                 await command.RespondAsync($"Can't quote <@{d}>");
@@ -155,8 +156,9 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 return;
             }
             
+            
+            
             Console.WriteLine("content is" + test.content);
-               await command.RespondAsync($"I quoted <@{d}> with {test.content}");
 
                if (_quoterContext.QuoteRecords.Count() > 4)
                {
@@ -176,6 +178,8 @@ Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                    Text = test.content
                });
                _quoterContext.SaveChanges();
+               await command.RespondAsync($"I quoted <@{d}> with {test.content}");
+
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);
