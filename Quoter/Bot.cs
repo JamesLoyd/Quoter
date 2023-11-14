@@ -50,10 +50,23 @@ public class Bot : IBot
         quoteThatCommand.WithDescription("I help you quopte");
         quoteThatCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote", true);
 
+        var quoteThatKeywordCommand = new SlashCommandBuilder();
+        quoteThatKeywordCommand.WithName("quote-that-keyword");
+        quoteThatKeywordCommand.WithDescription("I help you quopte");
+        quoteThatKeywordCommand.AddOption("quote", ApplicationCommandOptionType.String, "quote", true);
+        quoteThatKeywordCommand.AddOption("keyword", ApplicationCommandOptionType.String, "quote", true);
+
+
         var requestQuoteCommand = new SlashCommandBuilder();
         requestQuoteCommand.WithName("rq-that");
         requestQuoteCommand.WithDescription("I help you get quotes");
         requestQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+
+        var requestQuoteKeywordCommand = new SlashCommandBuilder();
+        requestQuoteKeywordCommand.WithName("rq-k");
+        requestQuoteKeywordCommand.WithDescription("I help you get quotes");
+        requestQuoteKeywordCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
+
 
         var listQuotesCommand = new SlashCommandBuilder();
         listQuotesCommand.WithName("list-quotes");
@@ -78,6 +91,11 @@ public class Bot : IBot
         addPerm.AddOption("permission", ApplicationCommandOptionType.Boolean, "Can purge quotes", true);
         addPerm.AddOption("quoted", ApplicationCommandOptionType.Role, "User to re-quote", true);
 
+        var deleteKeywordQuoteCommand = new SlashCommandBuilder();
+        deleteKeywordQuoteCommand.WithName("delete-quote-keyword");
+        deleteKeywordQuoteCommand.WithDescription("I help you get quotes");
+        deleteKeywordQuoteCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
+
         List<ApplicationCommandProperties> applicationCommandProperties = new();
 
 
@@ -91,6 +109,10 @@ public class Bot : IBot
             applicationCommandProperties.Add(purgeQuotesCommand.Build());
             applicationCommandProperties.Add(purgeQuoteCommand.Build());
             applicationCommandProperties.Add(addPerm.Build());
+            applicationCommandProperties.Add(requestQuoteKeywordCommand.Build());
+            applicationCommandProperties.Add(quoteThatKeywordCommand.Build());
+            applicationCommandProperties.Add(deleteKeywordQuoteCommand.Build());
+
 
             await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(),
                 new RequestOptions
@@ -113,8 +135,6 @@ public class Bot : IBot
 
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
-
-
         if (command.Data.Name == "quote-that")
         {
             Console.WriteLine("executing start");
@@ -186,7 +206,7 @@ public class Bot : IBot
 
                 var guild = _client.GetGuild(command.GuildId.Value);
                 var gus = guild.Users.FirstOrDefault(x => x.Id == id.Id);
-                var res1= await _quoterContext.QuoteUserRecords.AddAsync(new QuoteRecord
+                var res1 = await _quoterContext.QuoteUserRecords.AddAsync(new QuoteRecord
                 {
                     UserName = id.Username,
                     GlobalName = gus?.Nickname ?? id.GlobalName,
@@ -197,7 +217,8 @@ public class Bot : IBot
                     Text = test.content
                 });
                 await _quoterContext.SaveChangesAsync();
-                await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}, uniqueId = {res1.Entity.Id}");
+                await command.ModifyOriginalResponseAsync(x =>
+                    x.Content = $"I quoted <@{d}> with {test.content}, uniqueId = {res1.Entity.Id}");
                 return;
             }
             catch (Exception e)
@@ -237,29 +258,30 @@ public class Bot : IBot
             foreach (var perm in perms)
             {
                 var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
-                if(role == null) continue;
+                if (role == null) continue;
                 if (perm.CanPurge)
                 {
                     var id = command.Data.Options.ElementAt(0).Value! as IUser;
                     var message = _quoterContext.QuoteUserRecords.Where(x => x.UserName == id.Username);
-          
-                    await command.RespondAsync("Message count for user is: " + string.Join(',', message.Select(x => x.Text + "with id " + x.Id)),
+
+                    await command.RespondAsync(
+                        "Message count for user is: " +
+                        string.Join(',', message.Select(x => x.Text + "with id " + x.Id)),
                         ephemeral: true);
                 }
             }
-
         }
 
         if (command.Data.Name == "purge-quotes")
         {
             var purged = false;
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
-            var guild = _client.GetGuild(command.GuildId.Value).GetUser(id.Id);
+            var guild = _client.GetGuild(command.GuildId.Value).GetUser(command.User.Id);
             var perms = await _quoterContext.Permissions.ToListAsync();
             foreach (var perm in perms)
             {
                 var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
-                if(role == null) continue;
+                if (role == null) continue;
                 if (perm.CanPurge)
                 {
                     _quoterContext.QuoteUserRecords.RemoveRange(_quoterContext.QuoteUserRecords.Where(x =>
@@ -275,14 +297,14 @@ public class Bot : IBot
                 await command.RespondAsync("Failure to purge");
             }
         }
-        
+
         if (command.Data.Name == "purge-quote")
         {
             try
             {
                 var purged = false;
                 var id = command.Data.Options.ElementAt(0).Value! as IUser;
-                var guild = _client.GetGuild(command.GuildId.Value).GetUser(id.Id);
+                var guild = _client.GetGuild(command.GuildId.Value).GetUser(command.User.Id);
                 var perms = await _quoterContext.Permissions.ToListAsync();
                 await command.DeferAsync();
                 foreach (var perm in perms)
@@ -296,7 +318,8 @@ public class Bot : IBot
                             x.UserName == id.Username && x.GuildId == command.GuildId.ToString() &&
                             x.Id.ToString() == command.Data.Options.ElementAt(1).Value.ToString()));
                         _quoterContext.SaveChanges();
-                        await command.ModifyOriginalResponseAsync(x => x.Content = "Purged quotes for user " + id.Username);
+                        await command.ModifyOriginalResponseAsync(x =>
+                            x.Content = "Purged quotes for user " + id.Username);
                         purged = true;
                     }
                 }
@@ -320,6 +343,7 @@ public class Bot : IBot
                 await command.RespondAsync("Only my creator can add roles for now", ephemeral: true);
                 return;
             }
+
             var id = command.Data.Options.ElementAt(1).Value! as IRole;
             _quoterContext.Permissions.Add(new Permission
             {
@@ -330,6 +354,78 @@ public class Bot : IBot
             });
             _quoterContext.SaveChanges();
             await command.RespondAsync("Add role " + id.Name);
+        }
+
+        if (command.Data.Name == "rq-k")
+        {
+            var id = command.Data.Options.ElementAt(0).Value! as string;
+            try
+            {
+                var messagea = _quoterContext.Quotes.Where(
+                    x => x.KeyWord == id && x.GuildId == command.GuildId.ToString()
+                );
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(messagea));
+                var message = messagea.FirstOrDefault();
+                await command.RespondAsync($"{message.Text}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
+                await command.RespondAsync("There was an error", ephemeral: true);
+            }
+        }
+
+        if (command.Data.Name == "quote-that-keyword")
+        {
+            var id = command.Data.Options.ElementAt(0).Value! as string;
+            var keyword = command.Data.Options.ElementAt(1).Value! as string;
+            if (id.Contains("<@"))
+            {
+                await command.RespondAsync("Mentions are not allowed", ephemeral:true);
+                return;
+            }
+
+            if (_quoterContext.Quotes.Any(x => x.KeyWord == id))
+            {
+                await command.RespondAsync("Keywords must be unique", ephemeral: true);
+                return;
+            }
+            await _quoterContext.Quotes.AddAsync(new Quotes
+            {
+                KeyWord = keyword,
+                Text = id,
+                ChannelId = command.ChannelId.ToString(),
+                GuildId = command.GuildId.ToString()
+            });
+            await _quoterContext.SaveChangesAsync();
+            await command.RespondAsync($"Quoted {id}, look it up via keyword: {keyword}");
+        }
+
+        if (command.Data.Name == "delete-quote-keyword")
+        {
+            var purged = false;
+            var user = command.User.Id;
+            var id = command.Data.Options.ElementAt(0).Value! as string;
+            var guild = _client.GetGuild(command.GuildId.Value).GetUser(user);
+            var perms = await _quoterContext.Permissions.ToListAsync();
+            foreach (var perm in perms)
+            {
+                var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
+                if (role == null) continue;
+                if (perm.CanPurge)
+                {
+                    _quoterContext.Quotes.RemoveRange(_quoterContext.Quotes.Where(x =>
+                        x.KeyWord == id && x.GuildId == command.GuildId.ToString()));
+                    _quoterContext.SaveChanges();
+                    await command.RespondAsync("Purged quote with keyword " + id);
+                    purged = true;
+                }
+            }
+
+            if (!purged)
+            {
+                await command.RespondAsync("Failure to purge");
+            }
         }
     }
 }
