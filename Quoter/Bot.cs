@@ -178,15 +178,15 @@ public class Bot : IBot
 
                 Console.WriteLine("content is" + test.content);
 
-                if (_quoterContext.QuoteRecords.Count() > 100)
+                if (_quoterContext.QuoteUserRecords.Count() > 100)
                 {
-                    _quoterContext.QuoteRecords.Remove(_quoterContext.QuoteRecords.OrderBy(x => x.Id).Last());
+                    _quoterContext.QuoteUserRecords.Remove(_quoterContext.QuoteUserRecords.OrderBy(x => x.Id).Last());
                     await _quoterContext.SaveChangesAsync();
                 }
 
                 var guild = _client.GetGuild(command.GuildId.Value);
                 var gus = guild.Users.FirstOrDefault(x => x.Id == id.Id);
-                var res1= await _quoterContext.QuoteRecords.AddAsync(new QuoteRecord
+                var res1= await _quoterContext.QuoteUserRecords.AddAsync(new QuoteRecord
                 {
                     UserName = id.Username,
                     GlobalName = gus?.Nickname ?? id.GlobalName,
@@ -213,9 +213,9 @@ public class Bot : IBot
             {
                 var random = new Random();
                 var randomNumber = random.Next(0,
-                    _quoterContext.QuoteRecords.Count(x =>
+                    _quoterContext.QuoteUserRecords.Count(x =>
                         x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()));
-                var messagea = _quoterContext.QuoteRecords.Where(
+                var messagea = _quoterContext.QuoteUserRecords.Where(
                     x => x.UserId == id.Id.ToString() && x.GuildId == command.GuildId.ToString()
                 );
                 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(messagea));
@@ -241,7 +241,7 @@ public class Bot : IBot
                 if (perm.CanPurge)
                 {
                     var id = command.Data.Options.ElementAt(0).Value! as IUser;
-                    var message = _quoterContext.QuoteRecords.Where(x => x.UserName == id.Username);
+                    var message = _quoterContext.QuoteUserRecords.Where(x => x.UserName == id.Username);
           
                     await command.RespondAsync("Message count for user is: " + string.Join(',', message.Select(x => x.Text + "with id " + x.Id)),
                         ephemeral: true);
@@ -262,7 +262,7 @@ public class Bot : IBot
                 if(role == null) continue;
                 if (perm.CanPurge)
                 {
-                    _quoterContext.QuoteRecords.RemoveRange(_quoterContext.QuoteRecords.Where(x =>
+                    _quoterContext.QuoteUserRecords.RemoveRange(_quoterContext.QuoteUserRecords.Where(x =>
                         x.UserName == id.Username && x.GuildId == command.GuildId.ToString()));
                     _quoterContext.SaveChanges();
                     await command.RespondAsync("Purged quotes for user " + id.Username);
@@ -292,7 +292,7 @@ public class Bot : IBot
                     Console.WriteLine("Role is" + role.Name);
                     if (perm.CanPurge)
                     {
-                        _quoterContext.QuoteRecords.RemoveRange(_quoterContext.QuoteRecords.Where(x =>
+                        _quoterContext.QuoteUserRecords.RemoveRange(_quoterContext.QuoteUserRecords.Where(x =>
                             x.UserName == id.Username && x.GuildId == command.GuildId.ToString() &&
                             x.Id.ToString() == command.Data.Options.ElementAt(1).Value.ToString()));
                         _quoterContext.SaveChanges();

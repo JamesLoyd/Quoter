@@ -21,3 +21,9 @@ a
 1Quoter/Migrations/20231110225815_InitialCreate.cs,b\8\b8912e95dd4d0a8c9c136cc00d03b39ab751a128
 _
 /Quoter/Migrations/QuoterContextModelSnapshot.cs,c\b\cba7755f966e4103bef3fa6b17b0e72e446cbfa0
+I
+Quoter/Entities/Quotes.cs,1\0\109a7d1abdbe066fd53826868609ece64aaa4e0d
+o
+?Quoter/Migrations/20231114203532_UpdateQuotesTables.Designer.cs,0\8\0824f45330fef6bc4dd46d1350b0b7e07d61df77
+f
+6Quoter/Migrations/20231114203532_UpdateQuotesTables.cs,6\7\6701679e02eec0f5cb10ebc9e6f50ca89db4f712
