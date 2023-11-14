@@ -288,6 +288,7 @@ public class Bot : IBot
                 {
                     var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
                     if (role == null) continue;
+                    Console.WriteLine("Role is" + role.Name);
                     if (perm.CanPurge)
                     {
                         _quoterContext.QuoteRecords.RemoveRange(_quoterContext.QuoteRecords.Where(x =>
