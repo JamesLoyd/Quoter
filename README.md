@@ -22,6 +22,7 @@
 
 * It would be nice to be able to search for quotes by content. (:
   * Old quote bot would not allow us to do that. ):
+ * Add command to add keyword for quote and quote specific content
 
 ## Done
  
