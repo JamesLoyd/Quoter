@@ -60,10 +60,17 @@ public class Bot : IBot
         listQuotesCommand.WithDescription("I help you get quotes");
         listQuotesCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
 
+        var purgeQuotesCommand = new SlashCommandBuilder();
+        purgeQuotesCommand.WithName("purge-quotes");
+        purgeQuotesCommand.WithDescription("I help you get quotes");
+        purgeQuotesCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+
         var purgeQuoteCommand = new SlashCommandBuilder();
-        purgeQuoteCommand.WithName("purge-quotes");
+        purgeQuoteCommand.WithName("purge-quote");
         purgeQuoteCommand.WithDescription("I help you get quotes");
         purgeQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        purgeQuoteCommand.AddOption("quote-id", ApplicationCommandOptionType.Number, "User to re-quote", true);
+
 
         var addPerm = new SlashCommandBuilder();
         addPerm.WithName("add-perm");
@@ -81,6 +88,7 @@ public class Bot : IBot
             applicationCommandProperties.Add(quoteThatCommand.Build());
             applicationCommandProperties.Add(requestQuoteCommand.Build());
             applicationCommandProperties.Add(listQuotesCommand.Build());
+            applicationCommandProperties.Add(purgeQuotesCommand.Build());
             applicationCommandProperties.Add(purgeQuoteCommand.Build());
             applicationCommandProperties.Add(addPerm.Build());
 
@@ -170,7 +178,7 @@ public class Bot : IBot
 
                 Console.WriteLine("content is" + test.content);
 
-                if (_quoterContext.QuoteRecords.Count() > 4)
+                if (_quoterContext.QuoteRecords.Count() > 100)
                 {
                     _quoterContext.QuoteRecords.Remove(_quoterContext.QuoteRecords.OrderBy(x => x.Id).Last());
                     await _quoterContext.SaveChangesAsync();
@@ -178,7 +186,7 @@ public class Bot : IBot
 
                 var guild = _client.GetGuild(command.GuildId.Value);
                 var gus = guild.Users.FirstOrDefault(x => x.Id == id.Id);
-                await _quoterContext.QuoteRecords.AddAsync(new QuoteRecord
+                var res1= await _quoterContext.QuoteRecords.AddAsync(new QuoteRecord
                 {
                     UserName = id.Username,
                     GlobalName = gus?.Nickname ?? id.GlobalName,
@@ -189,7 +197,7 @@ public class Bot : IBot
                     Text = test.content
                 });
                 await _quoterContext.SaveChangesAsync();
-                await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}");
+                await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}, uniqueId = {res1.Entity.Id}");
             }
             catch (Exception e)
             {
@@ -222,15 +230,23 @@ public class Bot : IBot
 
         if (command.Data.Name == "list-quotes")
         {
-            if (command.User.Username != "jrocflanders")
+            var id22 = command.Data.Options.ElementAt(0).Value! as IUser;
+            var guild = _client.GetGuild(command.GuildId.Value).GetUser(id22.Id);
+            var perms = await _quoterContext.Permissions.ToListAsync();
+            foreach (var perm in perms)
             {
-                await command.RespondAsync("Not yet fam", ephemeral: true);
-                return;
+                var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
+                if(role == null) continue;
+                if (perm.CanPurge)
+                {
+                    var id = command.Data.Options.ElementAt(0).Value! as IUser;
+                    var message = _quoterContext.QuoteRecords.Where(x => x.UserName == id.Username);
+          
+                    await command.RespondAsync("Message count for user is: " + string.Join(',', message.Select(x => x.Text + "with id " + x.Id)),
+                        ephemeral: true);
+                }
             }
-            var id = command.Data.Options.ElementAt(0).Value! as IUser;
-            var message = _quoterContext.QuoteRecords.Where(x => x.UserName == id.Username);
-            await command.RespondAsync("Message count for user is: " + string.Join(',', message.Select(x => x.Text)),
-                ephemeral: true);
+
         }
 
         if (command.Data.Name == "purge-quotes")
@@ -256,6 +272,41 @@ public class Bot : IBot
             if (!purged)
             {
                 await command.RespondAsync("Failure to purge");
+            }
+        }
+        
+        if (command.Data.Name == "purge-quote")
+        {
+            try
+            {
+                var purged = false;
+                var id = command.Data.Options.ElementAt(0).Value! as IUser;
+                var guild = _client.GetGuild(command.GuildId.Value).GetUser(id.Id);
+                var perms = await _quoterContext.Permissions.ToListAsync();
+                foreach (var perm in perms)
+                {
+                    var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
+                    if (role == null) continue;
+                    if (perm.CanPurge)
+                    {
+                        _quoterContext.QuoteRecords.RemoveRange(_quoterContext.QuoteRecords.Where(x =>
+                            x.UserName == id.Username && x.GuildId == command.GuildId.ToString() &&
+                            x.Id.ToString() == command.Data.Options.ElementAt(1).Value.ToString()));
+                        _quoterContext.SaveChanges();
+                        await command.RespondAsync("Purged quotes for user " + id.Username);
+                        purged = true;
+                    }
+                }
+
+                if (!purged)
+                {
+                    await command.RespondAsync("Failure to purge");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
+                await command.RespondAsync("There was an error purging");
             }
         }
 
