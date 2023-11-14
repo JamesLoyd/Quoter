@@ -284,6 +284,7 @@ public class Bot : IBot
                 var id = command.Data.Options.ElementAt(0).Value! as IUser;
                 var guild = _client.GetGuild(command.GuildId.Value).GetUser(id.Id);
                 var perms = await _quoterContext.Permissions.ToListAsync();
+                await command.DeferAsync();
                 foreach (var perm in perms)
                 {
                     var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
@@ -295,20 +296,20 @@ public class Bot : IBot
                             x.UserName == id.Username && x.GuildId == command.GuildId.ToString() &&
                             x.Id.ToString() == command.Data.Options.ElementAt(1).Value.ToString()));
                         _quoterContext.SaveChanges();
-                        await command.RespondAsync("Purged quotes for user " + id.Username);
+                        await command.ModifyOriginalResponseAsync(x => x.Content = "Purged quotes for user " + id.Username);
                         purged = true;
                     }
                 }
 
                 if (!purged)
                 {
-                    await command.RespondAsync("Failure to purge");
+                    await command.ModifyOriginalResponseAsync(x => x.Content = "Failure to purge");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
-                await command.RespondAsync("There was an error purging");
+                await command.ModifyOriginalResponseAsync(x => x.Content = "There was an error purging");
             }
         }
 
