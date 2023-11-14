@@ -5,8 +5,9 @@ namespace Quoter;
 
 public class QuoterContext : DbContext
 {
-    public DbSet<QuoteRecord> QuoteRecords { get; set; } = null!;
+    public DbSet<QuoteRecord> QuoteUserRecords { get; set; } = null!;
     public DbSet<Permission> Permissions { get; set; } = null!;
+    public DbSet<Quotes> Quotes { get; set; } = null!;
     private string DbPath { get; }
 
     public QuoterContext()
