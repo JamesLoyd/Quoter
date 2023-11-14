@@ -1,15 +1,15 @@
 # Quoter
 
 ## Features to add
-- scrub the usernames in a quote, so it wont ping people
-- add a method to remove quotes, based on mod roles
+~~- scrub the usernames in a quote, so it wont ping people
+- add a method to remove quotes, based on mod roles~~
 - ~~add a "no quote" text phrase that will block the quoter from sniping a quote~~
 
 ## Technical TODO
 ~~- Wire up database and migrations :)~~
-- find a good # of quotes to store, pop off the last ones
-- restrict quotes to channels -- critical
-- restrict quotes to guild -- critical
+~~- find a good # of quotes to store, pop off the last ones~~
+~~- restrict quotes to channels -- critical
+- restrict quotes to guild -- critical~~
 - handle images
 
 
@@ -22,7 +22,7 @@
 
 * It would be nice to be able to search for quotes by content. (:
   * Old quote bot would not allow us to do that. ):
- * Add command to add keyword for quote and quote specific content
+ * ~~Add command to add keyword for quote and quote specific content~~
 
 ## Done
  
