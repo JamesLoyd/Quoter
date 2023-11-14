@@ -198,6 +198,7 @@ public class Bot : IBot
                 });
                 await _quoterContext.SaveChangesAsync();
                 await command.ModifyOriginalResponseAsync(x => x.Content = $"I quoted <@{d}> with {test.content}, uniqueId = {res1.Entity.Id}");
+                return;
             }
             catch (Exception e)
             {
