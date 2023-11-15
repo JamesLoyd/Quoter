@@ -444,11 +444,12 @@ public class Bot : IBot
             try
             {
 
-                var keywords = await _quoterContext.Quotes
-                    .Where(x => x.GuildId.ToString() == command.GuildId.ToString())
-                    .Select(x => x.KeyWord).ToListAsync();
+                var keywords = await _quoterContext.Quotes.ToListAsync();
+                    
+                   var keywords2 = keywords.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
+                    .Select(x => x.KeyWord).ToList();
                 await command.ModifyOriginalResponseAsync(
-                    x => x.Content = "Keywords are: " + string.Join(',', keywords));
+                    x => x.Content = "Keywords are: " + string.Join(',', keywords2));
             }
             catch (Exception ex)
             {
