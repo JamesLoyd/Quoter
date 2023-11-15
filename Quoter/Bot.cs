@@ -441,9 +441,20 @@ public class Bot : IBot
         if (command.CommandName == "list-keywords")
         {
             await command.DeferAsync(ephemeral: true);
-            var keywords = await _quoterContext.Quotes.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
-                .Select(x => x.KeyWord).ToListAsync();
-            await command.ModifyOriginalResponseAsync(x => x.Content = "Keywords are: " + string.Join(',', keywords));
+            try
+            {
+
+                var keywords = await _quoterContext.Quotes
+                    .Where(x => x.GuildId.ToString() == command.GuildId.ToString())
+                    .Select(x => x.KeyWord).ToListAsync();
+                await command.ModifyOriginalResponseAsync(
+                    x => x.Content = "Keywords are: " + string.Join(',', keywords));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
+                await command.ModifyOriginalResponseAsync(x => x.Content = "There was an error");
+            }
         }
     }
 }
