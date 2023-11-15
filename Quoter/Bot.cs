@@ -171,7 +171,7 @@ public class Bot : IBot
                     {
                         content = x.Content, username = x.Author.Username, mentioned = x.MentionedUserIds,
                         attchments = x.Attachments
-                    }).Reverse().LastOrDefault(x => x.username == id.ToString());
+                    }).Reverse().LastOrDefault(x => x.username == id.Username.ToString());
                 Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 Console.WriteLine("I got this far");
                 if(test == null)
