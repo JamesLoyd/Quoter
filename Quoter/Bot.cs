@@ -174,20 +174,24 @@ public class Bot : IBot
                     }).Reverse().LastOrDefault(x => x.username == id.ToString());
                 Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 Console.WriteLine("I got this far");
-
+                if(test == null)
+                {
+                    await command.RespondAsync($"Can't quote this", ephemeral: true);
+                    return;
+                }
                 if (test.content == "no quote")
                 {
                     await command.RespondAsync($"Can't quote <@{d}>");
                     return;
                 }
 
-                if (test.mentioned.Any())
+                if (test.mentioned?.Any() ?? false)
                 {
                     await command.RespondAsync("I can't quote messages with mentions", ephemeral: true);
                     return;
                 }
 
-                if (test.attchments.Any())
+                if (test.attchments?.Any() ?? false)
                 {
                     await command.RespondAsync("I can't quote  messages with attachments", ephemeral: true);
                     return;
