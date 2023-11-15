@@ -96,6 +96,10 @@ public class Bot : IBot
         deleteKeywordQuoteCommand.WithDescription("I help you get quotes");
         deleteKeywordQuoteCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
 
+        var listKeywordsQuoteCommand = new SlashCommandBuilder();
+        listKeywordsQuoteCommand.WithName("list-keywords");
+        listKeywordsQuoteCommand.WithDescription("I help you get quotes");
+        
         List<ApplicationCommandProperties> applicationCommandProperties = new();
 
 
@@ -112,6 +116,7 @@ public class Bot : IBot
             applicationCommandProperties.Add(requestQuoteKeywordCommand.Build());
             applicationCommandProperties.Add(quoteThatKeywordCommand.Build());
             applicationCommandProperties.Add(deleteKeywordQuoteCommand.Build());
+            applicationCommandProperties.Add(listKeywordsQuoteCommand.Build());
 
 
             await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(),
@@ -229,6 +234,7 @@ public class Bot : IBot
 
         if (command.Data.Name == "rq-that")
         {
+            await command.DeferAsync();
             var id = command.Data.Options.ElementAt(0).Value! as IUser;
             try
             {
@@ -241,12 +247,16 @@ public class Bot : IBot
                 );
                 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(messagea));
                 var message = messagea.ToArray()[randomNumber];
-                await command.RespondAsync($"{message.GlobalName}: {message.Text}");
+                await command.ModifyOriginalResponseAsync(x => x.Content = $"{message.GlobalName}: {message.Text}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
-                await command.RespondAsync("There was an error", ephemeral: true);
+                await command.ModifyOriginalResponseAsync( x =>
+                {
+                    x.Content = "There was an error";
+                    x.Flags = MessageFlags.Ephemeral;
+                });
             }
         }
 
@@ -426,6 +436,14 @@ public class Bot : IBot
             {
                 await command.RespondAsync("Failure to purge");
             }
+        }
+
+        if (command.CommandName == "list-keywords")
+        {
+            await command.DeferAsync();
+            var keywords = _quoterContext.Quotes.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
+                .Select(x => x.KeyWord).ToList();
+            await command.ModifyOriginalResponseAsync(x => x.Content = "Keywords are: " + string.Join(',', keywords));
         }
     }
 }
