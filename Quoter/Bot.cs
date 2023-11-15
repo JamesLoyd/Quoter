@@ -441,8 +441,8 @@ public class Bot : IBot
         if (command.CommandName == "list-keywords")
         {
             await command.DeferAsync(ephemeral: true);
-            var keywords = _quoterContext.Quotes.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
-                .Select(x => x.KeyWord).ToList();
+            var keywords = await _quoterContext.Quotes.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
+                .Select(x => x.KeyWord).ToListAsync();
             await command.ModifyOriginalResponseAsync(x => x.Content = "Keywords are: " + string.Join(',', keywords));
         }
     }
