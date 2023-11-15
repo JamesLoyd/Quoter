@@ -157,7 +157,7 @@ public class Bot : IBot
             {
                 var hello = userId.SelectMany(x => x).Select(x => new { x.Username, x.Id });
                 Console.WriteLine(JsonConvert.SerializeObject(hello));
-                var j = hello.FirstOrDefault(x => x.Username == id.ToString());
+                var j = hello.FirstOrDefault(x => x.Username == id.Username.ToString());
                 Console.WriteLine(JsonConvert.SerializeObject(j));
                 var c = (long)j.Id;
                 var d = (ulong)c;
