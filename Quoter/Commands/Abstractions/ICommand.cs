@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Discord.WebSocket;
+using MediatR;
 using Quoter.Domain.Interfaces;
 
 namespace Quoter.Commands.Abstractions;

@@ -1,11 +1,34 @@
 ﻿using Quoter.Commands.Abstractions;
+using Quoter.Entities;
 
 namespace Quoter.Commands.Features.QuoteThatKeyword;
 
 public class QuoteThatKeywordCommandHandler : CommandHandler<QuoteThatKeywordCommand, Result<Response>>
 {
-    protected override Task<Result<Response>> HandleCommandAsync(QuoteThatKeywordCommand command, CancellationToken cancellationToken = default)
+    private readonly QuoterContext _quoterContext;
+    public QuoteThatKeywordCommandHandler(QuoterContext context)
     {
-        throw new NotImplementedException();
+        _quoterContext = context;
+    }
+    
+    protected override async Task<Result<Response>> HandleCommandAsync(QuoteThatKeywordCommand command, CancellationToken cancellationToken = default)
+    {
+        if (_quoterContext.Quotes.Any(x => x.KeyWord == command.Keyword))
+        {
+            return Result.Failure<Response>(new Error("500","Keywords must be unique", true));
+        }
+        await _quoterContext.Quotes.AddAsync(new Quotes
+        {
+            KeyWord = command.Keyword,
+            Text = command.Quote,
+            ChannelId = command.Channel.Id.ToString(),
+            GuildId = command.Guild.Id.ToString()
+        }, cancellationToken);
+        await _quoterContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(new Response
+        {
+            Message = $"Quoted {command.Quote}, look it up via keyword: {command.Keyword}"
+        });
     }
 }

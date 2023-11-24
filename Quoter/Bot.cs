@@ -1,7 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Quoter.Commands.Features.QuoteThatKeyword;
+using Quoter.Domain.Models;
 using Quoter.Entities;
 
 namespace Quoter;
@@ -15,10 +18,14 @@ public class Bot : IBot
 {
     private DiscordSocketClient _client;
     private QuoterContext _quoterContext;
+    private IMediator _mediator;
+    private ICommandRegister _commandRegister;
 
-    public Bot(QuoterContext quoterContext)
+    public Bot(QuoterContext quoterContext, ICommandRegister commandRegister, IMediator mediator)
     {
         _quoterContext = quoterContext;
+        _commandRegister = commandRegister;
+        _mediator = mediator;
     }
 
     public async Task MainAsync()
@@ -44,17 +51,13 @@ public class Bot : IBot
     public async Task Client_Ready()
     {
         Console.WriteLine("client ready");
+
+        await _commandRegister.RegisterCommandsAsync(_client);
         // Let's do our global command
         var quoteThatCommand = new SlashCommandBuilder();
         quoteThatCommand.WithName("quote-that");
         quoteThatCommand.WithDescription("I help you quopte");
         quoteThatCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote", true);
-
-        var quoteThatKeywordCommand = new SlashCommandBuilder();
-        quoteThatKeywordCommand.WithName("quote-that-keyword");
-        quoteThatKeywordCommand.WithDescription("I help you quopte");
-        quoteThatKeywordCommand.AddOption("quote", ApplicationCommandOptionType.String, "quote", true);
-        quoteThatKeywordCommand.AddOption("keyword", ApplicationCommandOptionType.String, "quote", true);
 
 
         var requestQuoteCommand = new SlashCommandBuilder();
@@ -99,7 +102,7 @@ public class Bot : IBot
         var listKeywordsQuoteCommand = new SlashCommandBuilder();
         listKeywordsQuoteCommand.WithName("list-keywords");
         listKeywordsQuoteCommand.WithDescription("I help you get quotes");
-        
+
         List<ApplicationCommandProperties> applicationCommandProperties = new();
 
 
@@ -114,7 +117,6 @@ public class Bot : IBot
             applicationCommandProperties.Add(purgeQuoteCommand.Build());
             applicationCommandProperties.Add(addPerm.Build());
             applicationCommandProperties.Add(requestQuoteKeywordCommand.Build());
-            applicationCommandProperties.Add(quoteThatKeywordCommand.Build());
             applicationCommandProperties.Add(deleteKeywordQuoteCommand.Build());
             applicationCommandProperties.Add(listKeywordsQuoteCommand.Build());
 
@@ -174,11 +176,12 @@ public class Bot : IBot
                     }).Reverse().LastOrDefault(x => x.username == id.Username.ToString());
                 Console.WriteLine("t5est os " + JsonConvert.SerializeObject(test));
                 Console.WriteLine("I got this far");
-                if(test == null)
+                if (test == null)
                 {
                     await command.RespondAsync($"Can't quote this", ephemeral: true);
                     return;
                 }
+
                 if (test.content == "no quote")
                 {
                     await command.RespondAsync($"Can't quote <@{d}>");
@@ -256,7 +259,7 @@ public class Bot : IBot
             catch (Exception ex)
             {
                 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
-                await command.ModifyOriginalResponseAsync( x =>
+                await command.ModifyOriginalResponseAsync(x =>
                 {
                     x.Content = "There was an error";
                     x.Flags = MessageFlags.Ephemeral;
@@ -395,24 +398,27 @@ public class Bot : IBot
             var keyword = command.Data.Options.ElementAt(1).Value! as string;
             if (id.Contains("<@"))
             {
-                await command.RespondAsync("Mentions are not allowed", ephemeral:true);
+                await command.RespondAsync("Mentions are not allowed", ephemeral: true);
                 return;
             }
 
-            if (_quoterContext.Quotes.Any(x => x.KeyWord == id))
+            var response = await _mediator.Send(new QuoteThatKeywordCommand
             {
-                await command.RespondAsync("Keywords must be unique", ephemeral: true);
-                return;
-            }
-            await _quoterContext.Quotes.AddAsync(new Quotes
-            {
-                KeyWord = keyword,
-                Text = id,
-                ChannelId = command.ChannelId.ToString(),
-                GuildId = command.GuildId.ToString()
+                Channel = new ChannelModel
+                {
+                    Id = command.ChannelId.GetValueOrDefault(),
+                },
+                Guild = new GuildModel
+                {
+                    Id = command.GuildId.GetValueOrDefault()
+                },
+                Keyword = keyword,
+                Quote = id
             });
-            await _quoterContext.SaveChangesAsync();
-            await command.RespondAsync($"Quoted {id}, look it up via keyword: {keyword}");
+
+
+
+            await command.RespondAsync(response.Value.Message, ephemeral: response.Value.Ephemeral);
         }
 
         if (command.Data.Name == "delete-quote-keyword")
@@ -447,10 +453,9 @@ public class Bot : IBot
             await command.DeferAsync(ephemeral: true);
             try
             {
-
                 var keywords = await _quoterContext.Quotes.ToListAsync();
-                    
-                   var keywords2 = keywords.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
+
+                var keywords2 = keywords.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
                     .Select(x => x.KeyWord).ToList();
                 await command.ModifyOriginalResponseAsync(
                     x => x.Content = "Keywords are: " + string.Join(',', keywords2));

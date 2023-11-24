@@ -1,6 +1,6 @@
 ﻿namespace Quoter.Commands.Abstractions;
 
-public record Error(string Code, string Message)
+public record Error(string Code, string Message, bool Ephemeral = false)
 {
     public static readonly Error None = new(string.Empty, string.Empty);
 

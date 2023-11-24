@@ -5,8 +5,18 @@ using Quoter;
 using Quoter.Behaviors;
 using Quoter.Commands.Abstractions;
 using Quoter.Queries;
+using Serilog;
 
-CreateHostBuilder().Build().Run();
+var builder = CreateHostBuilder();
+builder.UseSerilog((context, serviceProvider, loggerConfiguration) =>
+{
+    loggerConfiguration.Enrich
+        .WithProperty("Application", "Quoter")
+        // .Enrich.WithSpan()
+        // .Enrich.WithBaggage()
+        .Enrich.FromLogContext();
+});
+builder.Build().Run();
 return;
 
 IHostBuilder CreateHostBuilder()
@@ -17,6 +27,11 @@ IHostBuilder CreateHostBuilder()
             services.AddSingleton<IBot, Bot>();
             services.AddHostedService<QuoterService>();
             services.AddDbContext<QuoterContext>();
+            services.Scan(scan => scan.FromAssemblyOf<Program>()
+                .AddClasses(classes => classes.AssignableTo(typeof(ICommandRegistration)))
+                .AsImplementedInterfaces()
+                .WithSingletonLifetime());
+            services.AddSingleton<ICommandRegister, CommandRegister>();
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
@@ -31,11 +46,10 @@ IHostBuilder CreateHostBuilder()
                         .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))
                         .AsImplementedInterfaces()
                         .WithTransientLifetime());
-            
+
                 cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-                // cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.NotificationPublisher = new TaskWhenAllPublisher();
             });
-        
         });
 }
