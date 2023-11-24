@@ -396,36 +396,6 @@ public class Bot : IBot
             }
         }
 
-        
-        // if (command.Data.Name == "quote-that-keyword")
-        // {
-        //     var id = command.Data.Options.ElementAt(0).Value! as string;
-        //     var keyword = command.Data.Options.ElementAt(1).Value! as string;
-        //     if (id.Contains("<@"))
-        //     {
-        //         await command.RespondAsync("Mentions are not allowed", ephemeral: true);
-        //         return;
-        //     }
-        //
-        //     var response = await _mediator.Send(new QuoteThatKeywordCommand
-        //     {
-        //         Channel = new ChannelModel
-        //         {
-        //             Id = command.ChannelId.GetValueOrDefault(),
-        //         },
-        //         Guild = new GuildModel
-        //         {
-        //             Id = command.GuildId.GetValueOrDefault()
-        //         },
-        //         Keyword = keyword,
-        //         Quote = id
-        //     });
-        //
-        //
-        //
-        //     await command.RespondAsync(response.Value.Message, ephemeral: response.Value.Ephemeral);
-        // }
-
         if (command.Data.Name == "delete-quote-keyword")
         {
             var purged = false;

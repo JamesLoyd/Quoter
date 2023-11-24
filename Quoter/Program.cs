@@ -1,4 +1,5 @@
-﻿using MediatR.NotificationPublishers;
+﻿using FluentValidation;
+using MediatR.NotificationPublishers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Quoter;
@@ -35,6 +36,7 @@ IHostBuilder CreateHostBuilder()
                 .AddClasses(classes => classes.AssignableTo(typeof(ICommandRegistration)))
                 .AsImplementedInterfaces()
                 .WithSingletonLifetime());
+            services.AddValidatorsFromAssembly(typeof(Program).Assembly);
             services.AddSingleton<ICommandRegister, CommandRegister>();
             services.AddMediatR(cfg =>
             {
