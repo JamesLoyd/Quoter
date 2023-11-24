@@ -1,4 +1,4 @@
-﻿namespace Quoter;
+﻿namespace Quoter.Domain;
 
 public interface IHasUser
 {

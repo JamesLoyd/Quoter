@@ -1,6 +1,7 @@
 ﻿using MediatR;
+using Quoter.Domain;
 
-namespace Quoter;
+namespace Quoter.Commands;
 
 public interface ICommand : ICommand<Unit>
 {
