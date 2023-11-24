@@ -7,17 +7,17 @@ public interface ICommand : ICommand<Unit>
 {
 }
 
-public partial interface ICommand<out T> : IRequest<T>, IHasUser
+public interface ICommand<out T> : IRequest<T>, IHasUser
     where T : notnull
 {
 }
 
-public partial interface ICommand<out T> : IRequest<T>, IHasUser, IHasGuild
+public interface IGuildCommand<out T> : ICommand<T>, IHasGuild
     where T : notnull
 {
 }
 
-public partial interface ICommand<out T> : IRequest<T>, IHasUser, IHasGuild, IHasChannel
+public interface IChannelCommand<out T> : IGuildCommand<T>, IHasChannel
     where T : notnull
 {
 }
