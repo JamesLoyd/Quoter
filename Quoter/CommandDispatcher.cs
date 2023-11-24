@@ -41,49 +41,54 @@ public class CommandDispatcher : ICommandDispatcher
         _logger.Information(" Found {CommandName}", commandFound.Name);
         if (commandFound.CommandType == typeof(QuoteThatKeywordCommand))
         {
-            _logger.Information("Dispatching {CommandName}", commandFound.Name);
-            var id = command.Data.Options.ElementAt(0).Value! as string;
-            var keyword = command.Data.Options.ElementAt(1).Value! as string;
-            if (id.Contains("<@"))
-            {
-                return new Response
-                {
-                    Message = "Mentions are not allowed",
-                    Ephemeral = true
-                };
-            }
-
-            _logger.Information(":id: {Id} :keyword: {Keyword}", id, keyword);
-            try
-            {
-                var response = await _mediator.Send(new QuoteThatKeywordCommand
-                {
-                    Channel = new ChannelModel
-                    {
-                        Id = command.ChannelId.GetValueOrDefault(),
-                    },
-                    Guild = new GuildModel
-                    {
-                        Id = command.GuildId.GetValueOrDefault()
-                    },
-                    Keyword = keyword,
-                    Quote = id
-                });
-
-                _logger.Information("Response: {Response}", response.Value.Message);
-                return response.Value;
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, "Error dispatching {CommandName}", commandFound.Name);
-                return new Response
-                {
-                    Message = "Something went wrong",
-                    Ephemeral = true
-                };
-            }
+            return await HandleQuoteThatKeyword(command, commandFound);
         }
 
         throw new Exception();
+    }
+
+    private async Task<Response> HandleQuoteThatKeyword(SocketSlashCommand command, ICommandRegistration commandFound)
+    {
+        _logger.Information("Dispatching {CommandName}", commandFound.Name);
+        var id = command.Data.Options.ElementAt(0).Value! as string;
+        var keyword = command.Data.Options.ElementAt(1).Value! as string;
+        if (id.Contains("<@"))
+        {
+            return new Response
+            {
+                Message = "Mentions are not allowed",
+                Ephemeral = true
+            };
+        }
+
+        _logger.Information(":id: {Id} :keyword: {Keyword}", id, keyword);
+        try
+        {
+            var response = await _mediator.Send(new QuoteThatKeywordCommand
+            {
+                Channel = new ChannelModel
+                {
+                    Id = command.ChannelId.GetValueOrDefault(),
+                },
+                Guild = new GuildModel
+                {
+                    Id = command.GuildId.GetValueOrDefault()
+                },
+                Keyword = keyword,
+                Quote = id
+            });
+
+            _logger.Information("Response: {Response}", response.Value.Message);
+            return response.Value;
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Error dispatching {CommandName}", commandFound.Name);
+            return new Response
+            {
+                Message = "Something went wrong",
+                Ephemeral = true
+            };
+        }
     }
 }
