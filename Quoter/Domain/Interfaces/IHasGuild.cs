@@ -1,4 +1,4 @@
-namespace Quoter.Domain;
+namespace Quoter.Domain.Interfaces;
 
 public interface IHasGuild
 {
