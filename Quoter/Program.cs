@@ -36,7 +36,6 @@ IHostBuilder CreateHostBuilder()
                 .AddClasses(classes => classes.AssignableTo(typeof(ICommandRegistration)))
                 .AsImplementedInterfaces()
                 .WithSingletonLifetime());
-            services.AddValidatorsFromAssembly(typeof(Program).Assembly);
             services.AddSingleton<ICommandRegister, CommandRegister>();
             services.AddMediatR(cfg =>
             {
@@ -57,5 +56,8 @@ IHostBuilder CreateHostBuilder()
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.NotificationPublisher = new TaskWhenAllPublisher();
             });
+            
+            services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
         });
 }

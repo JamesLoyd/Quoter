@@ -22,7 +22,8 @@ public class Bot : IBot
     private readonly ICommandDispatcher _commandDispatcher;
     private ICommandRegister _commandRegister;
 
-    public Bot(QuoterContext quoterContext, ICommandRegister commandRegister, IMediator mediator, ICommandDispatcher commandDispatcher)
+    public Bot(QuoterContext quoterContext, ICommandRegister commandRegister, IMediator mediator,
+        ICommandDispatcher commandDispatcher)
     {
         _quoterContext = quoterContext;
         _commandRegister = commandRegister;
@@ -40,7 +41,8 @@ public class Bot : IBot
 
         //  You can assign your bot token to a string, and pass that in to connect.
         //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
-        var token = "MTE3NDE2NTcxMjU1ODg4Mjg4Ng.GLKDdK.WF0dOeyE-D-hp3JIVfrRF8a1qRuAmRLjCp2kaM"; //prod == "MTE3MTg5ODc4MjM1OTc2MDkyNg.G11025.0VzY4Zz9kKGDWkUWv39vkcAZgcKxRgejuMsrJQ";
+        var token =
+            "MTE3NDE2NTcxMjU1ODg4Mjg4Ng.GLKDdK.WF0dOeyE-D-hp3JIVfrRF8a1qRuAmRLjCp2kaM"; //prod == "MTE3MTg5ODc4MjM1OTc2MDkyNg.G11025.0VzY4Zz9kKGDWkUWv39vkcAZgcKxRgejuMsrJQ";
 
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
@@ -145,7 +147,17 @@ public class Bot : IBot
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
         var response = await _commandDispatcher.DispatchCommand(command);
-        await command.RespondAsync(response.Message, ephemeral: response.Ephemeral);
+        if (response.IsSuccess)
+        {
+            await command.RespondAsync(response.Value.Message, ephemeral: response.Value.Ephemeral);
+            return;
+        }
+        else
+        {
+            await command.RespondAsync(response.Error.Message, ephemeral: response.Error.Ephemeral);
+            return;
+        }
+
         if (command.Data.Name == "quote-that")
         {
             Console.WriteLine("executing start");

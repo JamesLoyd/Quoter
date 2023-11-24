@@ -1,16 +1,18 @@
-﻿using Discord.WebSocket;
+﻿using System.ComponentModel.DataAnnotations;
+using Discord.WebSocket;
 using MediatR;
 using Quoter.Commands;
 using Quoter.Commands.Abstractions;
 using Quoter.Commands.Features.QuoteThatKeyword;
 using Quoter.Domain.Models;
 using Serilog;
+using ValidationException = Quoter.Validation.ValidationException;
 
 namespace Quoter;
 
 public interface ICommandDispatcher
 {
-    Task<Response> DispatchCommand(SocketSlashCommand command);
+    Task<Result<Response>> DispatchCommand(SocketSlashCommand command);
 }
 
 public class CommandDispatcher : ICommandDispatcher
@@ -26,7 +28,7 @@ public class CommandDispatcher : ICommandDispatcher
         _logger = logger;
     }
 
-    public async Task<Response> DispatchCommand(SocketSlashCommand command)
+    public async Task<Result<Response>> DispatchCommand(SocketSlashCommand command)
     {
         var commandFound = _commandRegistrations.SingleOrDefault(x => x.Name == command.Data.Name);
         if (commandFound == null)
@@ -47,21 +49,15 @@ public class CommandDispatcher : ICommandDispatcher
         throw new Exception();
     }
 
-    private async Task<Response> HandleQuoteThatKeyword(SocketSlashCommand command, ICommandRegistration commandFound)
+    private async Task<Result<Response>> HandleQuoteThatKeyword(SocketSlashCommand command,
+        ICommandRegistration commandFound)
     {
         _logger.Information("Dispatching {CommandName}", commandFound.Name);
         var id = command.Data.Options.ElementAt(0).Value! as string;
         var keyword = command.Data.Options.ElementAt(1).Value! as string;
-        if (id.Contains("<@"))
-        {
-            return new Response
-            {
-                Message = "Mentions are not allowed",
-                Ephemeral = true
-            };
-        }
 
         _logger.Information(":id: {Id} :keyword: {Keyword}", id, keyword);
+
         try
         {
             var response = await _mediator.Send(new QuoteThatKeywordCommand
@@ -79,16 +75,17 @@ public class CommandDispatcher : ICommandDispatcher
             });
 
             _logger.Information("Response: {Response}", response.Value.Message);
-            return response.Value;
+            return response;
+        }
+        catch (ValidationException e)
+        {
+            _logger.Error(e, "Error: {Error}", string.Join(",", e.Errors));
+            return Result.Failure<Response>(new Error("500", string.Join(",", e.Errors.Select(x => x.ErrorMessage)), true));
         }
         catch (Exception e)
         {
-            _logger.Error(e, "Error dispatching {CommandName}", commandFound.Name);
-            return new Response
-            {
-                Message = "Something went wrong",
-                Ephemeral = true
-            };
+            _logger.Error(e, "Error: {Error}", e.Message);
+            return Result.Failure<Response>(new Error("500", e.Message, true));
         }
     }
 }

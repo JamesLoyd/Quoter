@@ -7,7 +7,7 @@ using ValidationException = Quoter.Validation.ValidationException;
 namespace Quoter.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : ICommand<TResponse>
+    where TRequest : IChannelCommand<TResponse>
     where TResponse: notnull 
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;

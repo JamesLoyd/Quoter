@@ -16,6 +16,6 @@ public class QuoteValidator : AbstractValidator<QuoteThatKeywordCommand>
             .NotEmpty()
             .WithMessage("Quote cannot be empty");
 
-        RuleFor(x => x.Quote).Must(x => x!.ToString().Contains("<@")).WithMessage("Mntions are not allowed");
+        RuleFor(x => x.Quote).NotEmpty().Must(x => !(x!.Contains("<@"))).WithMessage("Mentions are not allowed");
     }
 }
