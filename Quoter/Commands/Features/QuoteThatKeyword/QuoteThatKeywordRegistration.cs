@@ -5,7 +5,7 @@ namespace Quoter.Commands.Features.QuoteThatKeyword;
 
 public class QuoteThatKeywordRegistration : ICommandRegistration
 {
-    public string Name => "q-k";
+    public string Name => "qk";
     public string Description => "Quote a quote by a keyword";
 
     public IEnumerable<CommandOption> Options => new List<CommandOption>
