@@ -1,8 +1,7 @@
 ﻿using Quoter.Commands.Abstractions;
-using Quoter.Domain.Interfaces;
 using Quoter.Domain.Models;
 
-namespace Quoter.Commands;
+namespace Quoter.Commands.Features.QuoteThatKeyword;
 
 public class QuoteThatKeywordCommand : IGuildCommand<Result<Response>>
 {
