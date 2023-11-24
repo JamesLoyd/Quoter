@@ -5,11 +5,13 @@ using Quoter;
 using Quoter.Behaviors;
 using Quoter.Commands.Abstractions;
 using Quoter.Queries;
+using Quoter.Serialization;
 using Serilog;
 
 var builder = CreateHostBuilder();
 builder.UseSerilog((context, serviceProvider, loggerConfiguration) =>
 {
+    loggerConfiguration.WriteTo.Console();
     loggerConfiguration.Enrich
         .WithProperty("Application", "Quoter")
         // .Enrich.WithSpan()
@@ -25,8 +27,10 @@ IHostBuilder CreateHostBuilder()
         .ConfigureServices((_, services) =>
         {
             services.AddSingleton<IBot, Bot>();
+            services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
             services.AddHostedService<QuoterService>();
             services.AddDbContext<QuoterContext>();
+            services.AddSingleton<ISerializer, DefaultSerializer>();
             services.Scan(scan => scan.FromAssemblyOf<Program>()
                 .AddClasses(classes => classes.AssignableTo(typeof(ICommandRegistration)))
                 .AsImplementedInterfaces()
@@ -39,10 +43,10 @@ IHostBuilder CreateHostBuilder()
                     scan.FromAssemblyOf<Program>().FromApplicationDependencies()
                         .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)))
                         .AsImplementedInterfaces()
-                        .WithTransientLifetime()
+                        .WithSingletonLifetime()
                         .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
                         .AsImplementedInterfaces()
-                        .WithTransientLifetime()
+                        .WithSingletonLifetime()
                         .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))
                         .AsImplementedInterfaces()
                         .WithTransientLifetime());

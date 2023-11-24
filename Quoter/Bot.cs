@@ -19,13 +19,15 @@ public class Bot : IBot
     private DiscordSocketClient _client;
     private QuoterContext _quoterContext;
     private IMediator _mediator;
+    private readonly ICommandDispatcher _commandDispatcher;
     private ICommandRegister _commandRegister;
 
-    public Bot(QuoterContext quoterContext, ICommandRegister commandRegister, IMediator mediator)
+    public Bot(QuoterContext quoterContext, ICommandRegister commandRegister, IMediator mediator, ICommandDispatcher commandDispatcher)
     {
         _quoterContext = quoterContext;
         _commandRegister = commandRegister;
         _mediator = mediator;
+        _commandDispatcher = commandDispatcher;
     }
 
     public async Task MainAsync()
@@ -38,7 +40,7 @@ public class Bot : IBot
 
         //  You can assign your bot token to a string, and pass that in to connect.
         //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
-        var token = "MTE3MTg5ODc4MjM1OTc2MDkyNg.G11025.0VzY4Zz9kKGDWkUWv39vkcAZgcKxRgejuMsrJQ";
+        var token = "MTE3NDE2NTcxMjU1ODg4Mjg4Ng.GLKDdK.WF0dOeyE-D-hp3JIVfrRF8a1qRuAmRLjCp2kaM"; //prod == "MTE3MTg5ODc4MjM1OTc2MDkyNg.G11025.0VzY4Zz9kKGDWkUWv39vkcAZgcKxRgejuMsrJQ";
 
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
@@ -54,78 +56,78 @@ public class Bot : IBot
 
         await _commandRegister.RegisterCommandsAsync(_client);
         // Let's do our global command
-        var quoteThatCommand = new SlashCommandBuilder();
-        quoteThatCommand.WithName("quote-that");
-        quoteThatCommand.WithDescription("I help you quopte");
-        quoteThatCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote", true);
-
-
-        var requestQuoteCommand = new SlashCommandBuilder();
-        requestQuoteCommand.WithName("rq-that");
-        requestQuoteCommand.WithDescription("I help you get quotes");
-        requestQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
-
-        var requestQuoteKeywordCommand = new SlashCommandBuilder();
-        requestQuoteKeywordCommand.WithName("rq-k");
-        requestQuoteKeywordCommand.WithDescription("I help you get quotes");
-        requestQuoteKeywordCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
-
-
-        var listQuotesCommand = new SlashCommandBuilder();
-        listQuotesCommand.WithName("list-quotes");
-        listQuotesCommand.WithDescription("I help you get quotes");
-        listQuotesCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
-
-        var purgeQuotesCommand = new SlashCommandBuilder();
-        purgeQuotesCommand.WithName("purge-quotes");
-        purgeQuotesCommand.WithDescription("I help you get quotes");
-        purgeQuotesCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
-
-        var purgeQuoteCommand = new SlashCommandBuilder();
-        purgeQuoteCommand.WithName("purge-quote");
-        purgeQuoteCommand.WithDescription("I help you get quotes");
-        purgeQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
-        purgeQuoteCommand.AddOption("quote-id", ApplicationCommandOptionType.Number, "User to re-quote", true);
-
-
-        var addPerm = new SlashCommandBuilder();
-        addPerm.WithName("add-perm");
-        addPerm.WithDescription("I help you get quotes");
-        addPerm.AddOption("permission", ApplicationCommandOptionType.Boolean, "Can purge quotes", true);
-        addPerm.AddOption("quoted", ApplicationCommandOptionType.Role, "User to re-quote", true);
-
-        var deleteKeywordQuoteCommand = new SlashCommandBuilder();
-        deleteKeywordQuoteCommand.WithName("delete-quote-keyword");
-        deleteKeywordQuoteCommand.WithDescription("I help you get quotes");
-        deleteKeywordQuoteCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
-
-        var listKeywordsQuoteCommand = new SlashCommandBuilder();
-        listKeywordsQuoteCommand.WithName("list-keywords");
-        listKeywordsQuoteCommand.WithDescription("I help you get quotes");
-
-        List<ApplicationCommandProperties> applicationCommandProperties = new();
+        // var quoteThatCommand = new SlashCommandBuilder();
+        // quoteThatCommand.WithName("quote-that");
+        // quoteThatCommand.WithDescription("I help you quopte");
+        // quoteThatCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to quote", true);
+        //
+        //
+        // var requestQuoteCommand = new SlashCommandBuilder();
+        // requestQuoteCommand.WithName("rq-that");
+        // requestQuoteCommand.WithDescription("I help you get quotes");
+        // requestQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        //
+        // var requestQuoteKeywordCommand = new SlashCommandBuilder();
+        // requestQuoteKeywordCommand.WithName("rq-k");
+        // requestQuoteKeywordCommand.WithDescription("I help you get quotes");
+        // requestQuoteKeywordCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
+        //
+        //
+        // var listQuotesCommand = new SlashCommandBuilder();
+        // listQuotesCommand.WithName("list-quotes");
+        // listQuotesCommand.WithDescription("I help you get quotes");
+        // listQuotesCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        //
+        // var purgeQuotesCommand = new SlashCommandBuilder();
+        // purgeQuotesCommand.WithName("purge-quotes");
+        // purgeQuotesCommand.WithDescription("I help you get quotes");
+        // purgeQuotesCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        //
+        // var purgeQuoteCommand = new SlashCommandBuilder();
+        // purgeQuoteCommand.WithName("purge-quote");
+        // purgeQuoteCommand.WithDescription("I help you get quotes");
+        // purgeQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
+        // purgeQuoteCommand.AddOption("quote-id", ApplicationCommandOptionType.Number, "User to re-quote", true);
+        //
+        //
+        // var addPerm = new SlashCommandBuilder();
+        // addPerm.WithName("add-perm");
+        // addPerm.WithDescription("I help you get quotes");
+        // addPerm.AddOption("permission", ApplicationCommandOptionType.Boolean, "Can purge quotes", true);
+        // addPerm.AddOption("quoted", ApplicationCommandOptionType.Role, "User to re-quote", true);
+        //
+        // var deleteKeywordQuoteCommand = new SlashCommandBuilder();
+        // deleteKeywordQuoteCommand.WithName("delete-quote-keyword");
+        // deleteKeywordQuoteCommand.WithDescription("I help you get quotes");
+        // deleteKeywordQuoteCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
+        //
+        // var listKeywordsQuoteCommand = new SlashCommandBuilder();
+        // listKeywordsQuoteCommand.WithName("list-keywords");
+        // listKeywordsQuoteCommand.WithDescription("I help you get quotes");
+        //
+        // List<ApplicationCommandProperties> applicationCommandProperties = new();
 
 
         try
         {
             // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
             // With global commands we don't need the guild.
-            applicationCommandProperties.Add(quoteThatCommand.Build());
-            applicationCommandProperties.Add(requestQuoteCommand.Build());
-            applicationCommandProperties.Add(listQuotesCommand.Build());
-            applicationCommandProperties.Add(purgeQuotesCommand.Build());
-            applicationCommandProperties.Add(purgeQuoteCommand.Build());
-            applicationCommandProperties.Add(addPerm.Build());
-            applicationCommandProperties.Add(requestQuoteKeywordCommand.Build());
-            applicationCommandProperties.Add(deleteKeywordQuoteCommand.Build());
-            applicationCommandProperties.Add(listKeywordsQuoteCommand.Build());
-
-
-            await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(),
-                new RequestOptions
-                {
-                    AuditLogReason = "Rebuild commands"
-                });
+            // applicationCommandProperties.Add(quoteThatCommand.Build());
+            // applicationCommandProperties.Add(requestQuoteCommand.Build());
+            // applicationCommandProperties.Add(listQuotesCommand.Build());
+            // applicationCommandProperties.Add(purgeQuotesCommand.Build());
+            // applicationCommandProperties.Add(purgeQuoteCommand.Build());
+            // applicationCommandProperties.Add(addPerm.Build());
+            // applicationCommandProperties.Add(requestQuoteKeywordCommand.Build());
+            // applicationCommandProperties.Add(deleteKeywordQuoteCommand.Build());
+            // applicationCommandProperties.Add(listKeywordsQuoteCommand.Build());
+            //
+            //
+            // await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(),
+            //     new RequestOptions
+            //     {
+            //         AuditLogReason = "Rebuild commands"
+            //     });
 
             // Using the ready event is a simple implementation for the sake of the example. Suitable for testing and development.
             // For a production bot, it is recommended to only run the CreateGlobalApplicationCommandAsync() once for each command.
@@ -142,6 +144,8 @@ public class Bot : IBot
 
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
+        var response = await _commandDispatcher.DispatchCommand(command);
+        await command.RespondAsync(response.Message, ephemeral: response.Ephemeral);
         if (command.Data.Name == "quote-that")
         {
             Console.WriteLine("executing start");
@@ -392,34 +396,35 @@ public class Bot : IBot
             }
         }
 
-        if (command.Data.Name == "quote-that-keyword")
-        {
-            var id = command.Data.Options.ElementAt(0).Value! as string;
-            var keyword = command.Data.Options.ElementAt(1).Value! as string;
-            if (id.Contains("<@"))
-            {
-                await command.RespondAsync("Mentions are not allowed", ephemeral: true);
-                return;
-            }
-
-            var response = await _mediator.Send(new QuoteThatKeywordCommand
-            {
-                Channel = new ChannelModel
-                {
-                    Id = command.ChannelId.GetValueOrDefault(),
-                },
-                Guild = new GuildModel
-                {
-                    Id = command.GuildId.GetValueOrDefault()
-                },
-                Keyword = keyword,
-                Quote = id
-            });
-
-
-
-            await command.RespondAsync(response.Value.Message, ephemeral: response.Value.Ephemeral);
-        }
+        
+        // if (command.Data.Name == "quote-that-keyword")
+        // {
+        //     var id = command.Data.Options.ElementAt(0).Value! as string;
+        //     var keyword = command.Data.Options.ElementAt(1).Value! as string;
+        //     if (id.Contains("<@"))
+        //     {
+        //         await command.RespondAsync("Mentions are not allowed", ephemeral: true);
+        //         return;
+        //     }
+        //
+        //     var response = await _mediator.Send(new QuoteThatKeywordCommand
+        //     {
+        //         Channel = new ChannelModel
+        //         {
+        //             Id = command.ChannelId.GetValueOrDefault(),
+        //         },
+        //         Guild = new GuildModel
+        //         {
+        //             Id = command.GuildId.GetValueOrDefault()
+        //         },
+        //         Keyword = keyword,
+        //         Quote = id
+        //     });
+        //
+        //
+        //
+        //     await command.RespondAsync(response.Value.Message, ephemeral: response.Value.Ephemeral);
+        // }
 
         if (command.Data.Name == "delete-quote-keyword")
         {

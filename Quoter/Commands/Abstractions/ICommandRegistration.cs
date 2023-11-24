@@ -7,6 +7,7 @@ public interface ICommandRegistration
     public string Name { get; }
     public string Description { get; }
     public IEnumerable<CommandOption> Options { get; }
+    public Type CommandType { get; }
 }
 
 public class CommandOption

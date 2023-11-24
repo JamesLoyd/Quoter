@@ -25,4 +25,6 @@ public class QuoteThatKeywordRegistration : ICommandRegistration
             IsRequired = true
         }
     };
+
+    public Type CommandType  => typeof(QuoteThatKeywordCommand);
 }

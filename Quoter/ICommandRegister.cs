@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using Quoter.Commands.Abstractions;
+using Serilog;
 
 namespace Quoter;
 
@@ -12,16 +13,18 @@ public interface ICommandRegister
 public class CommandRegister : ICommandRegister
 {
     private readonly IEnumerable<ICommandRegistration> _commandRegistrations;
+    private readonly ILogger _logger;
 
-    public CommandRegister(IEnumerable<ICommandRegistration> commandRegistrations)
+    public CommandRegister(IEnumerable<ICommandRegistration> commandRegistrations, ILogger logger)
     {
         _commandRegistrations = commandRegistrations;
+        _logger = logger;
     }
 
     public async Task RegisterCommandsAsync(DiscordSocketClient client)
     {
         List<ApplicationCommandProperties> applicationCommandProperties = new();
-        foreach (ICommandRegistration commandRegistration in _commandRegistrations)
+        foreach (var commandRegistration in _commandRegistrations)
         {
             var command = new SlashCommandBuilder();
             command.WithName(commandRegistration.Name);
@@ -31,7 +34,7 @@ public class CommandRegister : ICommandRegister
                 command.AddOption(commandRegistrationOption.Name, commandRegistrationOption.Type,
                     commandRegistrationOption.Description, commandRegistrationOption.IsRequired);
             }
-
+            _logger.Information("Registering {CommandName}", commandRegistration.Name);
             applicationCommandProperties.Add(command.Build());
         }
 
@@ -40,5 +43,7 @@ public class CommandRegister : ICommandRegister
             {
                 AuditLogReason = "Rebuild commands"
             });
+        _logger.Information("Registered {Count} commands", applicationCommandProperties.Count);
+        
     }
 }
