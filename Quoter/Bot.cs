@@ -31,7 +31,7 @@ public class Bot : IBot
 
         //  You can assign your bot token to a string, and pass that in to connect.
         //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
-        var token = "MTE3MTg5ODc4MjM1OTc2MDkyNg.GFZsex.370INlou9pvr-qHs1xZdtU27J_Tp0xVRgCtS0w";
+        var token = "MTE3MTg5ODc4MjM1OTc2MDkyNg.G11025.0VzY4Zz9kKGDWkUWv39vkcAZgcKxRgejuMsrJQ";
 
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
