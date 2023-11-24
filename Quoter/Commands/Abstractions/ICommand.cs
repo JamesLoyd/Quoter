@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using Quoter.Domain;
 using Quoter.Domain.Interfaces;
 
-namespace Quoter.Commands;
+namespace Quoter.Commands.Abstractions;
 
 public interface ICommand : ICommand<Unit>
 {
