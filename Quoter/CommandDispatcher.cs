@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using MediatR;
 using Quoter.Commands;
 using Quoter.Commands.Abstractions;
+using Quoter.Commands.Features.ListKeywords;
 using Quoter.Commands.Features.QuoteThatKeyword;
 using Quoter.Domain.Models;
 using Serilog;
@@ -40,10 +41,26 @@ public class CommandDispatcher : ICommandDispatcher
             };
         }
 
-        _logger.Information(" Found {CommandName}", commandFound.CommandName);
+        _logger.Information(" Found {CommandName}", commandFound.CommandType.Name);
         if (commandFound.CommandType == typeof(QuoteThatKeywordCommand))
         {
             return await HandleQuoteThatKeyword(command, commandFound);
+        }
+
+        if (commandFound.CommandType == typeof(ListKeywordQuery))
+        {
+            var response = await _mediator.Send(new ListKeywordQuery
+            {
+                Guild = new GuildModel
+                {
+                    Id = command.GuildId.GetValueOrDefault()
+                }
+            });
+            return Result.Success(new Response
+            {
+                Message = string.Join(',', response),
+                Ephemeral = true
+            });
         }
 
         throw new Exception();
