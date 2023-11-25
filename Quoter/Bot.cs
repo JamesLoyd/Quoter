@@ -93,11 +93,6 @@ public class Bot : IBot
         // purgeQuoteCommand.WithDescription("I help you get quotes");
         // purgeQuoteCommand.AddOption("quoted", ApplicationCommandOptionType.User, "User to re-quote", true);
         // purgeQuoteCommand.AddOption("quote-id", ApplicationCommandOptionType.Number, "User to re-quote", true);
-        //
-        // var deleteKeywordQuoteCommand = new SlashCommandBuilder();
-        // deleteKeywordQuoteCommand.WithName("delete-quote-keyword");
-        // deleteKeywordQuoteCommand.WithDescription("I help you get quotes");
-        // deleteKeywordQuoteCommand.AddOption("keyword", ApplicationCommandOptionType.String, "User to re-quote", true);
     }
     
     private ICommandRegistration? GetRegistration(SocketSlashCommand command)
