@@ -95,9 +95,6 @@ public class CommandDispatcher : ICommandDispatcher
             return Result.Failure<Response>(new Error("500", ex.Message));
         }
     }
-
-
-
     private async Task<Result<Response>> HandleListKeyword(SocketSlashCommand command)
     {
         var response = await _mediator.Send(new ListKeywordQuery
@@ -113,9 +110,7 @@ public class CommandDispatcher : ICommandDispatcher
             Ephemeral = true
         });
     }
-
-    private async Task<Result<Response>> HandleQuoteThatKeyword(SocketSlashCommand command,
-        ICommandRegistration commandFound)
+    private async Task<Result<Response>> HandleQuoteThatKeyword(SocketSlashCommand command, ICommandRegistration commandFound)
     {
         _logger.Information("Dispatching {CommandName}", commandFound.CommandName);
         var id = command.Data.Options.ElementAt(0).Value! as string;
