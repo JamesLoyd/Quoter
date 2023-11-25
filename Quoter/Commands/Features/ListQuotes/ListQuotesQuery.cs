@@ -1,6 +1,10 @@
-﻿namespace Quoter.Commands.Features.ListQuotes;
+﻿using Quoter.Domain.Models;
+using Quoter.Queries;
 
-public class ListQuotesQuery
+namespace Quoter.Commands.Features.ListQuotes;
+
+public class ListQuotesQuery : IQuery<IEnumerable<string>>
 {
-    
+    public GuildModel Guild { get; set; }
+    public string UserName { get; set; } = "";
 }

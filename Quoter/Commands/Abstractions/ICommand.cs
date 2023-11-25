@@ -22,3 +22,8 @@ public interface IChannelCommand<out T> : ICommand<T>, IHasChannel
     where T : notnull
 {
 }
+
+public interface IChannelUserCommand<out T> : ICommand<T>, IHasChannel, IHasUser
+    where T : notnull
+{
+}

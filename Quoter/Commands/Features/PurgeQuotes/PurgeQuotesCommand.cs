@@ -1,6 +1,10 @@
-﻿namespace Quoter.Commands.Features.PurgeQuotes;
+﻿using Quoter.Commands.Abstractions;
+using Quoter.Domain.Models;
 
-public class PurgeQuotesCommand
+namespace Quoter.Commands.Features.PurgeQuotes;
+
+public class PurgeQuotesCommand : ICommand<Result<Response>>
 {
-    
+    public GuildModel Guild { get; set; }
+    public string UserName { get; set; }
 }

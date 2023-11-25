@@ -1,6 +1,10 @@
-﻿namespace Quoter.Commands.Features.AddPermission;
+﻿using Quoter.Commands.Abstractions;
+using Quoter.Domain.Models;
 
-public class AddPermissionCommand
+namespace Quoter.Commands.Features.AddPermission;
+
+public class AddPermissionCommand : ICommand<Result<Response>>
 {
-    
+    public GuildModel Guild { get; set; }
+    public PermissionModel PermissionModel { get; set; }
 }
