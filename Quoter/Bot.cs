@@ -434,24 +434,5 @@ public class Bot : IBot
                 await command.RespondAsync("Failure to purge");
             }
         }
-
-        if (command.CommandName == "list-keywords")
-        {
-            await command.DeferAsync(ephemeral: true);
-            try
-            {
-                var keywords = await _quoterContext.Quotes.ToListAsync();
-
-                var keywords2 = keywords.Where(x => x.GuildId.ToString() == command.GuildId.ToString())
-                    .Select(x => x.KeyWord).ToList();
-                await command.ModifyOriginalResponseAsync(
-                    x => x.Content = "Keywords are: " + string.Join(',', keywords2));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ex));
-                await command.ModifyOriginalResponseAsync(x => x.Content = "There was an error");
-            }
-        }
     }
 }

@@ -42,28 +42,39 @@ public class CommandDispatcher : ICommandDispatcher
         }
 
         _logger.Information(" Found {CommandName}", commandFound.CommandType.Name);
+        
         if (commandFound.CommandType == typeof(QuoteThatKeywordCommand))
         {
             return await HandleQuoteThatKeyword(command, commandFound);
         }
-
-        if (commandFound.CommandType == typeof(ListKeywordQuery))
+        else if (commandFound.CommandType == typeof(ListKeywordQuery))
         {
-            var response = await _mediator.Send(new ListKeywordQuery
-            {
-                Guild = new GuildModel
-                {
-                    Id = command.GuildId.GetValueOrDefault()
-                }
-            });
-            return Result.Success(new Response
-            {
-                Message = string.Join(',', response),
-                Ephemeral = true
-            });
+            return await HandleListKeyword(command);
         }
+        else if(commandFound.CommandType == typeof(ILogger))
+        {
+             return Result.Success<Response>(new Response());
+        }
+        else
+        {
+            throw new Exception();
+        }
+    }
 
-        throw new Exception();
+    private async Task<Result<Response>> HandleListKeyword(SocketSlashCommand command)
+    {
+        var response = await _mediator.Send(new ListKeywordQuery
+        {
+            Guild = new GuildModel
+            {
+                Id = command.GuildId.GetValueOrDefault()
+            }
+        });
+        return Result.Success(new Response
+        {
+            Message = string.Join(',', response),
+            Ephemeral = true
+        });
     }
 
     private async Task<Result<Response>> HandleQuoteThatKeyword(SocketSlashCommand command,
