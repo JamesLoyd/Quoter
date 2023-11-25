@@ -438,32 +438,5 @@ public class Bot : IBot
                 await command.RespondAsync("There was an error", ephemeral: true);
             }
         }
-
-        if (command.Data.Name == "delete-quote-keyword")
-        {
-            var purged = false;
-            var user = command.User.Id;
-            var id = command.Data.Options.ElementAt(0).Value! as string;
-            var guild = _client.GetGuild(command.GuildId.Value).GetUser(user);
-            var perms = await _quoterContext.Permissions.ToListAsync();
-            foreach (var perm in perms)
-            {
-                var role = guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
-                if (role == null) continue;
-                if (perm.CanPurge)
-                {
-                    _quoterContext.Quotes.RemoveRange(_quoterContext.Quotes.Where(x =>
-                        x.KeyWord == id && x.GuildId == command.GuildId.ToString()));
-                    _quoterContext.SaveChanges();
-                    await command.RespondAsync("Purged quote with keyword " + id);
-                    purged = true;
-                }
-            }
-
-            if (!purged)
-            {
-                await command.RespondAsync("Failure to purge");
-            }
-        }
     }
 }
