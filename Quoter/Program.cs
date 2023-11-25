@@ -53,7 +53,7 @@ IHostBuilder CreateHostBuilder()
                         .WithTransientLifetime());
 
                 cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                // cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.NotificationPublisher = new TaskWhenAllPublisher();
             });
             

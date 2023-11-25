@@ -8,6 +8,8 @@ public interface ICommandRegistration
     public string Description { get; }
     public IEnumerable<CommandOption> Options { get; }
     public Type CommandType { get; }
+    public bool Defer => false;
+    public bool IsEphemeral => false;
 }
 
 public class CommandOption

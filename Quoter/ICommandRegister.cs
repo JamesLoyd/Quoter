@@ -28,27 +28,42 @@ public class CommandRegister : ICommandRegister
         foreach (var commandRegistration in _commandRegistrations)
         {
             var command = new SlashCommandBuilder();
-            command.WithName(commandRegistration.CommandName);
+            command.WithName(commandRegistration.CommandName.ToLower());
             command.WithDescription(commandRegistration.Description);
             if (commandRegistration.Options.Any())
             {
                 foreach (var commandRegistrationOption in commandRegistration.Options)
                 {
-                    command.AddOption(commandRegistrationOption.Name, commandRegistrationOption.Type,
+                    command.AddOption(commandRegistrationOption.Name.ToLower(), commandRegistrationOption.Type,
                         commandRegistrationOption.Description, commandRegistrationOption.IsRequired);
                 }
             }
 
             _logger.Information("Registering {CommandName}", commandRegistration.CommandType.Name);
-            applicationCommandProperties.Add(command.Build());
+            try
+            {
+
+                applicationCommandProperties.Add(command.Build());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message + " on " + command.Name);
+            }
         }
 
-        await client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(),
-            new RequestOptions
-            {
-                AuditLogReason = "Rebuild commands"
-            });
-        _logger.Information("Registered {Count} commands", applicationCommandProperties.Count);
-        
+        try
+        {
+
+            await client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray(),
+                new RequestOptions
+                {
+                    AuditLogReason = "Rebuild commands"
+                });
+            _logger.Information("Registered {Count} commands", applicationCommandProperties.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex.Message);
+        }
     }
 }

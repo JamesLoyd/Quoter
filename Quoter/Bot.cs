@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Quoter.Commands.Abstractions;
 using Quoter.Commands.Features.QuoteThatKeyword;
 using Quoter.Domain.Models;
 using Quoter.Entities;
@@ -20,15 +21,17 @@ public class Bot : IBot
     private QuoterContext _quoterContext;
     private IMediator _mediator;
     private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IEnumerable<ICommandRegistration> _commandRegistrations;
     private ICommandRegister _commandRegister;
 
     public Bot(QuoterContext quoterContext, ICommandRegister commandRegister, IMediator mediator,
-        ICommandDispatcher commandDispatcher)
+        ICommandDispatcher commandDispatcher, IEnumerable<ICommandRegistration> commandRegistrations)
     {
         _quoterContext = quoterContext;
         _commandRegister = commandRegister;
         _mediator = mediator;
         _commandDispatcher = commandDispatcher;
+        _commandRegistrations = commandRegistrations;
     }
 
     public async Task MainAsync()
@@ -143,17 +146,47 @@ public class Bot : IBot
             Console.WriteLine(json);
         }
     }
+    
+    private ICommandRegistration? GetRegistration(SocketSlashCommand command)
+    {
+        var commandFound = _commandRegistrations.SingleOrDefault(x => x.CommandName == command.Data.Name);
+        return commandFound;
+    }
 
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
-        var response = await _commandDispatcher.DispatchCommand(command);
+        //check if we need to defer
+        var commandRegistration =  GetRegistration(command);
+        if (commandRegistration == null)
+        {
+            await command.RespondAsync("Fatal error, command registration not found");
+            return;
+        }
+        if (commandRegistration.Defer)
+        {
+            await command.DeferAsync(ephemeral: commandRegistration.IsEphemeral);
+            var deferresponse = await _commandDispatcher.DispatchCommand(command, _client);
+            if (deferresponse.IsSuccess)
+            {
+                await command.ModifyOriginalResponseAsync(x => x.Content = deferresponse.Value.Message);
+                return;
+            }
+            else
+            {
+                await command.ModifyOriginalResponseAsync(x => x.Content = deferresponse.Error.Message);
+                return;
+            }
+        }
+        var response = await _commandDispatcher.DispatchCommand(command, _client);
         if (response.IsSuccess)
         {
             await command.RespondAsync(response.Value.Message, ephemeral: response.Value.Ephemeral);
+            return;
         }
         else
         {
             await command.RespondAsync(response.Error.Message, ephemeral: response.Error.Ephemeral);
+            return;
         }
 
         if (command.Data.Name == "quote-that")

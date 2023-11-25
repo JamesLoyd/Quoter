@@ -1,23 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Quoter.Commands.Abstractions;
+using Serilog;
 
 namespace Quoter.Commands.Features.DeleteQuoteKeyword;
 
-public class DeleteQuoteKeywordCommandHandler : CommandHandler<DeleteQuoteKeywordCommand,Result<Response>>
+public class DeleteQuoteKeywordCommandHandler : CommandHandler<DeleteQuoteKeywordCommand, Result<Response>>
 {
     private readonly QuoterContext _quoterContext;
 
-    public DeleteQuoteKeywordCommandHandler(QuoterContext quoterContext)
+    public DeleteQuoteKeywordCommandHandler(QuoterContext context)
     {
-        _quoterContext = quoterContext;
+        _quoterContext = context;
     }
-    protected override async Task<Result<Response>> HandleCommandAsync(DeleteQuoteKeywordCommand command, CancellationToken cancellationToken = default)
+
+    protected override async Task<Result<Response>> HandleCommandAsync(DeleteQuoteKeywordCommand command,
+        CancellationToken cancellationToken = default)
     {
         var perms = await _quoterContext.Permissions.ToListAsync(cancellationToken: cancellationToken);
         foreach (var perm in perms)
         {
-            var role = command.Guild.Roles.FirstOrDefault(x => x.Id.ToString() == perm.RoleId);
-            if (role == null) continue;
+            var role = command.Guild.RoleIds.Any(x => x.ToString() == perm.RoleId);
+            if (role == false) continue;
             if (perm.CanPurge)
             {
                 _quoterContext.Quotes.RemoveRange(_quoterContext.Quotes.Where(x =>

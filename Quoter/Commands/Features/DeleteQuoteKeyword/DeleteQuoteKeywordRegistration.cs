@@ -5,14 +5,14 @@ namespace Quoter.Commands.Features.DeleteQuoteKeyword;
 
 public class DeleteQuoteKeywordRegistration : ICommandRegistration
 {
-    public string CommandName => "dq";
+    public string CommandName => "delete-keyword-2";
     public string Description => "Delete a quote keyword";
 
     public IEnumerable<CommandOption> Options => new List<CommandOption>
     {
         new CommandOption
         {
-            Name = "Keyword",
+            Name = "keyword",
             Description = "Keyword to delete",
             IsRequired = true,
             Type = ApplicationCommandOptionType.String
@@ -20,4 +20,8 @@ public class DeleteQuoteKeywordRegistration : ICommandRegistration
     };
 
     public Type CommandType => typeof(DeleteQuoteKeywordCommand);
+
+    public bool Defer => true;
+    public bool IsEphemeral => true;
+
 }
