@@ -24,17 +24,22 @@ public class CommandRegister : ICommandRegister
     public async Task RegisterCommandsAsync(DiscordSocketClient client)
     {
         List<ApplicationCommandProperties> applicationCommandProperties = new();
+        _logger.Information("I have {Count} to register", _commandRegistrations.Count());
         foreach (var commandRegistration in _commandRegistrations)
         {
             var command = new SlashCommandBuilder();
-            command.WithName(commandRegistration.Name);
+            command.WithName(commandRegistration.CommandName);
             command.WithDescription(commandRegistration.Description);
-            foreach (var commandRegistrationOption in commandRegistration.Options)
+            if (commandRegistration.Options.Any())
             {
-                command.AddOption(commandRegistrationOption.Name, commandRegistrationOption.Type,
-                    commandRegistrationOption.Description, commandRegistrationOption.IsRequired);
+                foreach (var commandRegistrationOption in commandRegistration.Options)
+                {
+                    command.AddOption(commandRegistrationOption.Name, commandRegistrationOption.Type,
+                        commandRegistrationOption.Description, commandRegistrationOption.IsRequired);
+                }
             }
-            _logger.Information("Registering {CommandName}", commandRegistration.Name);
+
+            _logger.Information("Registering {CommandName}", commandRegistration.CommandType.Name);
             applicationCommandProperties.Add(command.Build());
         }
 

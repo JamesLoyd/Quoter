@@ -30,7 +30,7 @@ public class CommandDispatcher : ICommandDispatcher
 
     public async Task<Result<Response>> DispatchCommand(SocketSlashCommand command)
     {
-        var commandFound = _commandRegistrations.SingleOrDefault(x => x.Name == command.Data.Name);
+        var commandFound = _commandRegistrations.SingleOrDefault(x => x.CommandName == command.Data.Name);
         if (commandFound == null)
         {
             return new Response
@@ -40,7 +40,7 @@ public class CommandDispatcher : ICommandDispatcher
             };
         }
 
-        _logger.Information(" Found {CommandName}", commandFound.Name);
+        _logger.Information(" Found {CommandName}", commandFound.CommandName);
         if (commandFound.CommandType == typeof(QuoteThatKeywordCommand))
         {
             return await HandleQuoteThatKeyword(command, commandFound);
@@ -52,7 +52,7 @@ public class CommandDispatcher : ICommandDispatcher
     private async Task<Result<Response>> HandleQuoteThatKeyword(SocketSlashCommand command,
         ICommandRegistration commandFound)
     {
-        _logger.Information("Dispatching {CommandName}", commandFound.Name);
+        _logger.Information("Dispatching {CommandName}", commandFound.CommandName);
         var id = command.Data.Options.ElementAt(0).Value! as string;
         var keyword = command.Data.Options.ElementAt(1).Value! as string;
 
