@@ -150,12 +150,10 @@ public class Bot : IBot
         if (response.IsSuccess)
         {
             await command.RespondAsync(response.Value.Message, ephemeral: response.Value.Ephemeral);
-            return;
         }
         else
         {
             await command.RespondAsync(response.Error.Message, ephemeral: response.Error.Ephemeral);
-            return;
         }
 
         if (command.Data.Name == "quote-that")
